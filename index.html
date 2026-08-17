@@ -152,6 +152,7 @@ input{width:100%;height:48px;border:2px solid var(--line);border-radius:13px;pad
     </div>
     <div class="quote-actions">
       <button class="btn primary" onclick="printQuote()">🖨️ Imprimer / PDF</button>
+      <button class="btn" onclick="shareQuote()">📤 Envoyer / partager</button>
       <button class="btn" onclick="closeQuote()">✏️ Modifier</button>
     </div>
   </div>
@@ -381,6 +382,29 @@ function generateQuote(){
   document.getElementById("printArea").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function printQuote(){window.print()}
+function quoteShareText(){
+  const q=calc();
+  const name=document.getElementById("client").value.trim();
+  const phone=document.getElementById("phone").value.trim();
+  const model=document.getElementById("model").value.trim();
+  const plate=document.getElementById("plate").value.trim();
+  const place=get(PLACES,S.place)[1], state=get(STATES,S.state)[1];
+  const lines=q.lines.map(x=>`• ${x[0]} : ${x[1]<0?"- ":""}${Math.abs(x[1])} €`).join("\n");
+  return `DEVIS CYRILAUTO CLEAN\n\nClient : ${name||"—"}\nTéléphone : ${phone||"—"}\nVéhicule : ${model||"—"} — ${get(V,S.vehicle)[1]}\nImmatriculation : ${plate||"—"}\nLieu : ${place}\nÉtat : ${state}\n\nPrestations :\n${lines}\n\nTOTAL : ${q.p} €\n\nDevis valable 30 jours. Toute prestation non prévue fera l’objet d’un accord préalable.`;
+}
+async function shareQuote(){
+  const q=calc();
+  if(!q.lines.length){alert("Sélectionne au moins une prestation.");return}
+  const text=quoteShareText();
+  if(navigator.share){
+    try{await navigator.share({title:"Devis CyrilAutoClean",text});}catch(e){}
+  }else if(navigator.clipboard){
+    try{await navigator.clipboard.writeText(text);alert("Le devis a été copié. Tu peux le coller dans Messages, Mail ou WhatsApp.");}
+    catch(e){alert("Le partage direct n’est pas disponible sur cet appareil. Utilise Imprimer / PDF puis le menu de partage.");}
+  }else{
+    alert("Le partage direct n’est pas disponible. Utilise Imprimer / PDF puis le menu de partage.");
+  }
+}
 function closeQuote(){document.getElementById("printArea").style.display="none"}
 function resetAll(){S={vehicle:"compact",state:"normal",place:"shop",interior:"none",upholstery:"fabric",exterior:"none",correction:"none",ceramic:"none",optics:"none",glass:"none",discount:"none",extras:{}};document.querySelectorAll("input").forEach(i=>i.value="");refresh();showClient(null);closeQuote()}
 document.querySelectorAll("input").forEach(i=>i.addEventListener("input",()=>{showClient(record());renderDiscount()}));
