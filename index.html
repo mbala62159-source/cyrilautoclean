@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#17365d">
-<title>CyrilAutoClean — V7</title>
+<title>CyrilAutoClean — V9</title>
 <style>
 :root{--navy:#17365d;--blue:#2f75b5;--bg:#f3f6fa;--line:#d8e0e9;--text:#17212b;--muted:#68768d;--ok:#eaf7ee;--warn:#fff7df}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
@@ -41,7 +41,7 @@ input{width:100%;height:48px;border:2px solid var(--line);border-radius:13px;pad
 </style>
 </head>
 <body>
-<header><h1>CyrilAutoClean</h1><p>V7 • constructeur de devis • detailing automobile</p></header>
+<header><h1>CyrilAutoClean</h1><p>V9 • constructeur de devis • detailing automobile</p></header>
 <main>
 <section class="card">
 <h2>👤 Client</h2>
@@ -117,7 +117,7 @@ input{width:100%;height:48px;border:2px solid var(--line);border-radius:13px;pad
 <div class="total">
 <div class="totalrow"><div><small>TOTAL CLIENT</small><div id="summary" class="summary">Choisis tes prestations</div></div><strong id="total">0 €</strong></div>
 <div style="margin-top:6px">Temps de travail estimé : <b id="time">0 min</b></div>
-<div id="control" class="notice">Sélectionne une prestation.</div>
+<div id="control" class="notice">Sélectionne une prestation.</div><div class="notice">⏱️ Temps interne : non affiché sur le devis client.</div><div class="notice">Tarifs V8 recalibrés pour rester accessibles sans sous-facturer le temps de travail.</div>
 </div>
 <div class="actions">
 <button class="btn primary" onclick="generateQuote()">Générer le devis</button>
@@ -161,37 +161,41 @@ input{width:100%;height:48px;border:2px solid var(--line);border-radius:13px;pad
 
 <script>
 const V=[
-["small","Petite citadine",.88],["compact","Citadine / compacte",1],["sedan","Berline",1.08],["wagon","Break",1.12],["coupe","Coupé / cabriolet",1.05],
-["mpv","Monospace / ludospace",1.12],["suvc","SUV compact",1.08],["suv","SUV / 4x4",1.18],["bigsuv","Grand SUV / 4x4",1.30],
-["usmall","Petit utilitaire",1.15],["umed","Utilitaire moyen",1.28],["van","Fourgon L1/L2",1.40],["van34","Fourgon L3/L4",1.60],["camper","Van / camping-car",1.55]
+["small","Petite citadine",0.85],["compact","Citadine / compacte",1.00],["sedan","Berline",1.05],["wagon","Break",1.10],["coupe","Coupé / cabriolet",1.00],
+["mpv","Monospace / ludospace",1.12],["suvc","SUV compact",1.10],["suv","SUV / 4x4",1.20],["bigsuv","Grand SUV / 4x4",1.30],
+["usmall","Petit utilitaire",1.10],["umed","Utilitaire moyen",1.20],["van","Fourgon L1/L2",1.35],["van34","Fourgon L3/L4",1.50],["camper","Van / camping-car",1.65]
 ];
-const STATES=[["normal","Normal",1],["dirty","Sale",1.12],["very","Très sale",1.25],["extreme","Extrême",1.40]];
+const STATES=[["normal","Normal",1],["dirty","Sale",1.08],["very","Très sale",1.15],["extreme","Extrême",1.25]];
 const PLACES=[["shop","Chez CyrilAutoClean"],["home","À domicile / chez le client"]];
 const INT=[
-["none","Aucun",0,0],["essential","Essentiel",60,240],["classic","Classique",90,300],["premium","Premium",125,360]
+["none","Aucun",0,0],["essential","Essentiel",55,90],["classic","Classique",85,150],["premium","Premium",120,210]
 ];
 const EXT=[
-["none","Aucun",0,0],["essential","Essentiel",50,90],["classic","Classique",70,120],["premium","Premium",100,180]
+["none","Aucun",0,0],["essential","Essentiel",45,60],["classic","Classique",65,105],["premium","Premium",90,150]
 ];
 const CORR=[
-["none","Aucune",0,0],["one","One-Step",175,330],["two","Correction 2 étapes",295,510]
+["none","Aucune",0,0],["one","One-Step",220,330],["two","Correction 2 étapes",350,510]
 ];
 const CER=[
 ["none","Aucune",0,0,""],
-["cquk","CQUARTZ UK Edition 30",249,90,"Céramique CARPRO • durabilité réelle annoncée 18–24 mois • application panneau par panneau • buff immédiat ou après quelques minutes • contrôle des high spots"],
-["dc60","Hendlex DC60",229,120,"Céramique sprayable Hendlex • jusqu’à 1–2 ans selon conditions • application + contrôle • séchage initial 12–24 h • durcissement final 7 jours"],
+["cquk","CQUARTZ UK Edition 30",249,90,"Céramique CARPRO • durabilité réelle annoncée 18–24 mois • pose panneau par panneau • contrôle des high spots"],
+["dc60","Hendlex DC60",229,120,"Céramique sprayable Hendlex • temps de pose/contrôle interne prévu : 2 h"]
 ];
-const OPT=[["none","Aucune",0,0],["renov","Rénovation optiques — paire",69,90],["poly","Rénovation + polymérisation — paire",99,135]];
-const GLASS=[["none","Aucun",0,0],["glaco","Glaco — vitres",30,60]];
+const OPT=[
+["none","Aucune",0,0],["renov","Rénovation optiques — paire",65,75],["poly","Rénovation + polymérisation — paire",95,105]
+];
+const GLASS=[
+["none","Aucun",0,0],["glaco","Glaco — vitres",25,45]
+];
 const EXTRA=[
-["poilsL","Poils légers",10,15,"all"],["poilsH","Poils importants",20,45,"all"],["stains","Taches importantes",15,30,"all"],
-["extraction","Extraction textiles",25,60,"fabric"],["leather","Cuir + soin",25,45,"leather"],["alcantara","Alcantara + soin",20,35,"alcantara"],
-["carnauba","Carnauba",25,30,"all"],["wax","Wax",29,30,"all"]
+["poilsL","Poils légers",10,15,"all"],["poilsH","Poils importants",20,35,"all"],["stains","Taches importantes",15,30,"all"],
+["extraction","Extraction textiles",35,60,"fabric"],["leather","Cuir + soin",35,45,"leather"],["alcantara","Alcantara + soin",30,40,"alcantara"],
+["carnauba","Carnauba",25,30,"all"],["wax","Wax",30,30,"all"]
 ];
 let S={vehicle:"compact",state:"normal",place:"shop",interior:"none",upholstery:"fabric",exterior:"none",correction:"none",ceramic:"none",optics:"none",glass:"none",discount:"none",extras:{}};
 
-function db(){try{return JSON.parse(localStorage.getItem("cyrilautoclean_clients_v6")||"{}")}catch(e){return {}}}
-function saveDB(x){localStorage.setItem("cyrilautoclean_clients_v6",JSON.stringify(x))}
+function db(){try{return JSON.parse(localStorage.getItem("cyrilautoclean_clients_v8")||"{}")}catch(e){return {}}}
+function saveDB(x){localStorage.setItem("cyrilautoclean_clients_v8",JSON.stringify(x))}
 function norm(x){return(x||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
 function keyPhone(){return(document.getElementById("phone").value||"").replace(/\D/g,"")}
 function record(){
@@ -297,20 +301,27 @@ function renderCeramic(){
  });
  document.getElementById("ceramicInfo").innerHTML=S.ceramic==="none"
    ?'<div class="notice">Pour une vraie céramique, sélectionne d’abord <b>Extérieur Premium</b>. Cela évite de poser un coating sur une carrosserie insuffisamment préparée.</div>'
-   :`<div class="notice"><b>${get(CER,S.ceramic)[1]}</b> : ${get(CER,S.ceramic)[4]}.<br>La préparation est assurée par <b>Extérieur Premium</b>. Une correction peinture supplémentaire reste possible si nécessaire.<br><small>Le temps affiché correspond au travail de pose et de contrôle ; le temps de durcissement du produit se fait ensuite hors présence du client.</small></div>`;
+   :`<div class="notice"><b>${get(CER,S.ceramic)[1]}</b> : ${get(CER,S.ceramic)[4]}.<br>La préparation est assurée par <b>Extérieur Premium</b>. Une correction peinture supplémentaire reste possible si nécessaire.<br><small>Le temps de durcissement du produit se fait ensuite hors présence du client.</small></div>`;
 }
 function get(a,k){return a.find(x=>x[0]===k)||a[0]}
 function calc(){
  const f=get(V,S.vehicle)[2],sf=get(STATES,S.state)[2];let p=0,m=0,n=0,lines=[];
  if(S.ceramic!=="none" && S.exterior!=="premium"){S.ceramic="none";}
- const add=(a,k,stateSensitive=true,sectionLabel="")=>{let x=get(a,k);if(!x||x[0]==="none")return;let mult=stateSensitive?sf:1;p+=x[2]*f*mult;m+=x[3]*f*mult;n++;let displayLabel=sectionLabel?sectionLabel+" "+x[1]:x[1];lines.push([displayLabel,Math.round(x[2]*f*mult)])};
+ const add=(arr,key,stateSensitive=true,label="")=>{
+  let x=get(arr,key);if(!x||x[0]==="none")return;
+  let mult=stateSensitive?sf:1;p+=x[2]*f*mult;m+=x[3]*f*mult;n++;
+  lines.push([label?label+" "+x[1]:x[1],Math.round(x[2]*f*mult/5)*5]);
+ };
  add(INT,S.interior,true,"Intérieur");add(EXT,S.exterior,true,"Extérieur");add(CORR,S.correction,false);add(CER,S.ceramic,false);add(OPT,S.optics,false);add(GLASS,S.glass,false);
- EXTRA.forEach(x=>{if(S.extras[x[0]]){p+=x[2];m+=x[3];n++;lines.push([x[1],x[2]])}});
+ EXTRA.forEach(x=>{if(S.extras[x[0]]){p+=x[2]*f;m+=x[3]*f;n++;lines.push([x[1],Math.round(x[2]*f/5)*5])}});
  if(S.place==="home"){p+=20;m+=15;lines.push(["Déplacement à domicile",20])}
- let d=0;if(S.discount==="loyalty")d=10;if(S.discount==="c5")d=Math.round(p*.05);if(S.discount==="c10")d=Math.round(p*.10);if(d){p-=d;lines.push(["Remise",-d])}
+ let d=0;if(S.discount==="loyalty")d=10;if(S.discount==="c5")d=Math.round(p*.05);if(S.discount==="c10")d=Math.round(p*.10);
+ if(d){p-=d;lines.push(["Remise",-d])}
  p=Math.max(0,Math.round(p/5)*5);m=Math.round(m);
- document.getElementById("total").textContent=p+" €";document.getElementById("time").textContent=(Math.floor(m/60)?Math.floor(m/60)+"h ":"")+(m%60?m%60+" min":"");
- document.getElementById("summary").textContent=n?n+" élément(s) sélectionné(s)":"Choisis tes prestations";document.getElementById("control").textContent=n?`Contrôle interne • ${document.getElementById("time").textContent} • prix client ${p} €`:"Sélectionne au moins une prestation.";
+ document.getElementById("total").textContent=p+" €";
+ document.getElementById("time").textContent=(Math.floor(m/60)?Math.floor(m/60)+"h ":"")+(m%60?m%60+" min":"");
+ document.getElementById("summary").textContent=n?n+" élément(s) sélectionné(s)":"Choisis tes prestations";
+ document.getElementById("control").textContent=n?`Contrôle interne • ${document.getElementById("time").textContent} • prix client ${p} €`:"Sélectionne au moins une prestation.";
  return{p,m,lines};
 }
 function refresh(){group("vehicle",V,"vehicle");group("state",STATES,"state");group("place",PLACES,"place");group("interior",INT,"interior");group("upholstery",[["fabric","Tissu"],["leather","Cuir"],["alcantara","Alcantara"]],"upholstery");group("exterior",EXT,"exterior");group("correction",CORR,"correction");group("optics",OPT,"optics");group("glass",GLASS,"glass");renderCeramic();renderOptions();renderDiscount();calc()}
