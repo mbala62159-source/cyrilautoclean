@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17365d">
+<title>CyrilAutoClean — V10</title>
+<style>
+:root{--navy:#17365d;--blue:#2f75b5;--bg:#f3f6fa;--line:#d8e0e9;--text:#17212b;--muted:#68768d;--ok:#eaf7ee;--warn:#fff7df}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:26px 18px 23px;box-shadow:0 3px 14px #0002}
+header h1{margin:0;font-size:30px}header p{margin:5px 0 0;opacity:.9}
+main{max-width:920px;margin:auto;padding:14px 12px 125px}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;margin:14px 0;box-shadow:0 2px 10px #00000008}
+h2{font-size:22px;margin:0 0 9px}.hint{font-size:14px;line-height:1.45;color:var(--muted);margin:0 0 13px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:11px}label{display:block;color:var(--muted);font-size:13px;font-weight:800;margin:8px 0 6px}
+input{width:100%;height:48px;border:2px solid var(--line);border-radius:13px;padding:0 13px;font-size:16px}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.choice{min-height:67px;border:2px solid var(--line);border-radius:15px;background:#fff;color:var(--blue);font-weight:850;font-size:15px;padding:10px;cursor:pointer}
+.choice small{display:block;color:var(--muted);font-weight:600;margin-top:4px}.choice.active{border-color:var(--blue);background:#eaf4ff;color:var(--navy)}.choice:disabled{opacity:.38;cursor:not-allowed}
+.status{padding:12px;border-radius:13px;background:#f5f7fa;color:var(--muted);font-size:14px;line-height:1.45}.status.ok{background:var(--ok);color:#176b38}.status.warn{background:var(--warn);color:#765900}
+.option{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:14px;padding:12px;margin:8px 0}.option small{color:var(--muted)}.option button{border:0;border-radius:11px;padding:9px 13px;font-weight:850;background:#eef2f6}.option button.on{background:#d9ecff;color:var(--navy)}
+.notice{padding:10px 12px;background:#edf4fb;color:#385777;border-radius:12px;margin-top:10px;font-size:13px;line-height:1.4}
+.total{position:sticky;bottom:8px;z-index:5;background:#122d4b;color:#fff;border-radius:20px;padding:15px 17px;box-shadow:0 6px 25px #0003}.totalrow{display:flex;justify-content:space-between;align-items:center;gap:12px}.total small{opacity:.8}.total strong{font-size:36px}.summary{font-size:13px;margin-top:3px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.btn{height:53px;border-radius:14px;border:2px solid var(--line);background:#fff;font-weight:850;font-size:15px}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+@media(max-width:600px){.row{grid-template-columns:1fr}.choices{grid-template-columns:1fr 1fr}.choice{font-size:14px}.total strong{font-size:31px}}
+
+/* Devis imprimable */
+.quote-preview{display:none}
+.quote-sheet{background:#fff;color:#17212b;border:1px solid #d8e0e9;border-radius:16px;padding:28px;margin:18px 0}
+.quote-head{display:flex;justify-content:space-between;gap:20px;border-bottom:3px solid #17365d;padding-bottom:14px;margin-bottom:18px}
+.quote-brand{font-size:25px;font-weight:900;color:#17365d}.quote-title{font-size:18px;margin-top:4px}
+.quote-meta{text-align:right;font-size:12px;color:#68768d}.quote-info{line-height:1.55;margin-bottom:20px}
+.quote-table{width:100%;border-collapse:collapse;margin:12px 0 18px}.quote-table th,.quote-table td{padding:9px 6px;border-bottom:1px solid #d8e0e9;text-align:left;vertical-align:top}.quote-table th:last-child,.quote-table td:last-child{text-align:right;white-space:nowrap}
+.quote-total{text-align:right;font-size:25px;font-weight:900;margin:15px 0}.quote-conditions{font-size:12px;line-height:1.5;color:#68768d;border-top:1px solid #d8e0e9;padding-top:12px}.quote-sign{margin-top:24px;font-size:13px}.quote-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+@media print{
+  body{background:#fff!important}
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block!important}
+  .quote-sheet{border:0!important;border-radius:0!important;margin:0!important;padding:12mm!important;box-shadow:none!important}
+  .quote-actions{display:none!important}
+  @page{size:A4;margin:0}
+}
+
+.quote-sign{margin-top:24px!important;padding-top:18px!important;border-top:1px solid #d7e0e8!important;font-size:15px!important;line-height:1.9!important}
+.quote-sign b{font-size:18px}
+
+.quote-table th:nth-child(1),.quote-table td:nth-child(1){width:27%}
+.quote-table th:nth-child(2),.quote-table td:nth-child(2){width:55%}
+.quote-table th:nth-child(3),.quote-table td:nth-child(3){width:18%;white-space:nowrap}
+</style>
+</head>
+<body>
+<header><h1>CyrilAutoClean</h1><p>V10 • constructeur de devis • detailing automobile</p></header>
+<main>
+<section class="card">
+<h2>👤 Client</h2>
+<div class="row">
+<div><label>Nom / prénom</label><input id="client" placeholder="Ex. Jean Dupont"></div>
+<div><label>Téléphone</label><input id="phone" inputmode="tel" placeholder="06…"></div>
+<div><label>Véhicule / modèle</label><input id="model" placeholder="Ex. Kia ProCeed"></div>
+<div><label>Immatriculation</label><input id="plate" placeholder="AA-123-AA"></div>
+</div>
+<div class="actions">
+<button class="btn" onclick="findClient()">🔎 Rechercher</button>
+<button class="btn" onclick="saveClient()">💾 Enregistrer client</button>
+</div>
+</section>
+
+<section class="card">
+<h2>⭐ Fiche client</h2>
+<div id="history" class="status">Entre le téléphone du client pour retrouver son historique.</div>
+</section>
+
+<section class="card">
+<h2>1. Type de véhicule</h2><p class="hint">Le gabarit adapte automatiquement prix et temps.</p><div id="vehicle" class="choices"></div>
+</section>
+
+<section class="card">
+<h2>2. État du véhicule</h2><p class="hint">L'état augmente le temps de travail. Il n'est pas affiché comme une « pénalité » sur le devis.</p><div id="state" class="choices"></div>
+</section>
+
+<section class="card">
+<h2>3. Lieu d'intervention</h2><div id="place" class="choices"></div>
+</section>
+
+<section class="card">
+<h2>4. Intérieur</h2><p class="hint"><b>Essentiel</b> : entretien courant • <b>Classique</b> : nettoyage approfondi • <b>Premium</b> : remise à niveau poussée.</p><div id="interior" class="choices"></div>
+<div style="margin-top:14px">
+  <label>Type de sellerie</label>
+  <div id="upholstery" class="choices"></div>
+</div>
+<div id="interiorExtras"></div>
+</section>
+
+<section class="card">
+<h2>5. Extérieur</h2><p class="hint"><b>Essentiel</b> : lavage • <b>Classique</b> : lavage + finition • <b>Premium</b> : préparation + décontamination + protection.</p><div id="exterior" class="choices"></div>
+</section>
+
+<section class="card">
+<h2>6. Correction carrosserie</h2><p class="hint">La préparation nécessaire est incluse dans le temps annoncé.</p><div id="correction" class="choices"></div>
+</section>
+
+<section class="card">
+<h2>7. Protection céramique PRO</h2>
+<p class="hint">Vraie céramique à poser après préparation de la carrosserie. La pose est comptée à <b>1h30 minimum</b>; la préparation reste facturée par la prestation choisie.</p>
+<div id="ceramic" class="choices"></div>
+<div id="ceramicInfo"></div>
+</section>
+
+<section class="card">
+<h2>8. Optiques — par paire</h2><div id="optics" class="choices"></div>
+</section>
+
+<section class="card">
+<h2>9. Vitrages</h2><div id="glass" class="choices"></div>
+</section>
+
+<section class="card">
+<h2>10. Options</h2><div id="options"></div>
+</section>
+
+<section class="card">
+<h2>11. Remise</h2><p class="hint">Une seule remise. La fidélité est disponible automatiquement après 3 prestations.</p><div id="discount" class="choices"></div>
+</section>
+
+<div class="total">
+<div class="totalrow"><div><small>TOTAL CLIENT</small><div id="summary" class="summary">Choisis tes prestations</div></div><strong id="total">0 €</strong></div>
+<div style="margin-top:6px">Temps de travail estimé : <b id="time">0 min</b></div>
+<div id="control" class="notice">Sélectionne une prestation.</div><div class="notice">⏱️ Temps interne : non affiché sur le devis client.</div><div class="notice">Tarifs V8 recalibrés pour rester accessibles sans sous-facturer le temps de travail.</div>
+</div>
+<div class="actions">
+<button class="btn primary" onclick="generateQuote()">Générer le devis</button>
+<button class="btn" onclick="resetAll()">Nouveau devis</button>
+</div>
+
+<section id="printArea" class="quote-preview">
+  <div class="quote-sheet">
+    <div class="quote-head">
+      <div>
+        <div class="quote-brand">CyrilAutoClean</div>
+        <div class="quote-title">DEVIS DE PRESTATION — DETAILING AUTOMOBILE</div>
+      </div>
+      <div class="quote-meta"><div id="qNumber"></div><div id="qDate"></div></div>
+    </div>
+    <div id="qInfo" class="quote-info"></div>
+    <table class="quote-table">
+      <thead><tr><th>Prestation</th><th>Description</th><th>Montant</th></tr></thead>
+      <tbody id="qLines"></tbody>
+    </table>
+    <div id="qTotal" class="quote-total"></div>
+    <div class="quote-conditions">
+      <b>Conditions</b><br>
+      Devis valable 30 jours. Le tarif est établi selon la catégorie du véhicule, son état déclaré ou constaté
+      et les prestations sélectionnées. Toute différence importante constatée avant intervention peut entraîner
+      un ajustement après accord du client. Toute prestation non prévue au devis fera l'objet d'un accord préalable.
+      Une remise commerciale est facultative et visible sur le devis. La remise fidélité est réservée aux clients concernés. La génération du devis ne compte pas comme une prestation réalisée.
+    </div>
+    <div class="quote-sign"><b>Bon pour accord</b><br><br>
+      Nom / signature : ___________________________________________<br><br>
+      Date : ____ / ____ / ______
+    </div>
+    <div class="quote-actions">
+      <button class="btn primary" onclick="printQuote()">🖨️ Imprimer via le terminal</button>
+      <button class="btn" onclick="createPDF()">📄 Créer le PDF</button>
+      <button class="btn" onclick="emailQuote()">📧 Envoyer par e-mail</button>
+      <button class="btn" onclick="shareQuote()">📤 Partager le devis</button>
+      <button class="btn" onclick="closeQuote()">✏️ Modifier</button>
+    </div>
+    <div id="v10Status" class="status" style="margin-top:10px;display:none"></div>
+    <div class="notice"><b>V10 :</b> l'impression utilise l'impression native du terminal (FICHERO si elle est proposée). Le PDF peut être enregistré puis imprimé depuis FICHERO → « Imprimer des fichiers ». L'envoi e-mail utilise le partage de fichier du terminal quand il est disponible.</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+const V=[
+["small","Petite citadine",0.85],["compact","Citadine / compacte",1.00],["sedan","Berline",1.05],["wagon","Break",1.10],["coupe","Coupé / cabriolet",1.00],
+["mpv","Monospace / ludospace",1.12],["suvc","SUV compact",1.10],["suv","SUV / 4x4",1.20],["bigsuv","Grand SUV / 4x4",1.30],
+["usmall","Petit utilitaire",1.10],["umed","Utilitaire moyen",1.20],["van","Fourgon L1/L2",1.35],["van34","Fourgon L3/L4",1.50],["camper","Van / camping-car",1.65]
+];
+const STATES=[["normal","Normal",1],["dirty","Sale",1.08],["very","Très sale",1.15],["extreme","Extrême",1.25]];
+const PLACES=[["shop","Chez CyrilAutoClean"],["home","À domicile / chez le client"]];
+const INT=[
+["none","Aucun",0,0],["essential","Essentiel",55,90],["classic","Classique",85,150],["premium","Premium",120,210]
+];
+const EXT=[
+["none","Aucun",0,0],["essential","Essentiel",45,60],["classic","Classique",65,105],["premium","Premium",90,150]
+];
+const CORR=[
+["none","Aucune",0,0],["one","One-Step",220,330],["two","Correction 2 étapes",350,510]
+];
+const CER=[
+["none","Aucune",0,0,""],
+["cquk","CQUARTZ UK Edition 30",249,90,"Céramique CARPRO • durabilité réelle annoncée 18–24 mois • pose panneau par panneau • contrôle des high spots"],
+["dc60","Hendlex DC60",229,120,"Céramique sprayable Hendlex • temps de pose/contrôle interne prévu : 2 h"]
+];
+const OPT=[
+["none","Aucune",0,0],["renov","Rénovation optiques — paire",65,75],["poly","Rénovation + polymérisation — paire",95,105]
+];
+const GLASS=[
+["none","Aucun",0,0],["glaco","Glaco — vitres",25,45]
+];
+const EXTRA=[
+["poilsL","Poils légers",10,15,"all"],["poilsH","Poils importants",20,35,"all"],["stains","Taches importantes",15,30,"all"],
+["extraction","Extraction textiles",35,60,"fabric"],["leather","Cuir + soin",35,45,"leather"],["alcantara","Alcantara + soin",30,40,"alcantara"],
+["carnauba","Carnauba",25,30,"all"],["wax","Wax",30,30,"all"]
+];
+let S={vehicle:"compact",state:"normal",place:"shop",interior:"none",upholstery:"fabric",exterior:"none",correction:"none",ceramic:"none",optics:"none",glass:"none",discount:"none",extras:{}};
+
+function db(){try{return JSON.parse(localStorage.getItem("cyrilautoclean_clients_v8")||"{}")}catch(e){return {}}}
+function saveDB(x){localStorage.setItem("cyrilautoclean_clients_v8",JSON.stringify(x))}
+function norm(x){return(x||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
+function keyPhone(){return(document.getElementById("phone").value||"").replace(/\D/g,"")}
+function record(){
+ const D=db(),p=keyPhone();
+ if(!p)return null;
+ return D["p:"+p]||null;
+}
+function showClient(r=record()){
+ const h=document.getElementById("history");if(!r){h.className="status";h.textContent="Entre le téléphone du client pour retrouver son historique.";return}
+ const vs=(r.vehicles||[]).map(v=>`${v.model||"Véhicule"}${v.plate?" — "+v.plate:""}`).join("<br>")||"Aucun véhicule";
+ h.className="status ok";h.innerHTML=`<b>⭐ ${r.name}</b><br>📱 ${r.phone||"—"}<br>🚗 ${vs}<br>📅 ${r.count||0} prestation(s) • dernière : ${r.last||"—"}<br>💰 CA cumulé : ${Math.round(r.ca||0)} €${r.count>=3?'<br><b>🎁 Fidélité −10 € disponible</b>':""}`;
+}
+function findClient(){
+ const p=keyPhone();
+ if(!p){showClient(null);renderDiscount();calc();alert("Renseigne le téléphone du client.");return}
+ let r=record();
+ if(r){
+   document.getElementById("client").value=r.name||"";
+   document.getElementById("phone").value=r.phone||"";
+   let v=r.vehicles?.[0];
+   if(v){
+     document.getElementById("model").value=v.model||"";
+     document.getElementById("plate").value=v.plate||"";
+   }
+ }
+ showClient(r);renderDiscount();calc()
+}
+function saveClient(){
+ const name=document.getElementById("client").value.trim(),p=keyPhone();
+ if(!name){alert("Renseigne le nom du client.");return}
+ if(!p){alert("Renseigne le téléphone du client.");return}
+ let r=record()||{name,phone:"",count:0,ca:0,last:"",vehicles:[]};
+ r.name=name;
+ r.phone=document.getElementById("phone").value.trim();
+ let model=document.getElementById("model").value.trim(),plate=document.getElementById("plate").value.trim();
+ if(model&&!r.vehicles.some(v=>norm(v.model)===norm(model)&&norm(v.plate)===norm(plate)))r.vehicles.push({model,plate});
+ let D=db();D["p:"+p]=r;saveDB(D);showClient(r);renderDiscount();alert("Client enregistré.")
+}
+function recordSale(total){
+ let r=record();if(!r){saveClient();r=record()}if(!r)return;
+ r.count=(r.count||0)+1;r.ca=(r.ca||0)+total;r.last=new Date().toLocaleDateString("fr-FR");
+ let D=db();D["p:"+keyPhone()]=r;saveDB(D);showClient(r);renderDiscount();
+}
+function group(id,arr,key){
+ const e=document.getElementById(id);e.innerHTML="";
+ arr.forEach(x=>{
+   let b=document.createElement("button");
+   b.className="choice"+(S[key]===x[0]?" active":"");
+   b.innerHTML="<b>"+x[1]+"</b>"+(x[2]!==undefined&&x[2]?"<small>"+x[2]+" €</small>":"");
+   b.onclick=()=>{
+     S[key]=x[0];
+     if(key==="upholstery"){
+       if(x[0]!=="fabric")delete S.extras.extraction;
+       if(x[0]!=="leather")delete S.extras.leather;
+       if(x[0]!=="alcantara")delete S.extras.alcantara;
+     }
+     refresh()
+   };
+   e.appendChild(b)
+ })
+}
+function extraType(){return S.upholstery}
+function renderOptions(){
+ const e=document.getElementById("options"),ie=document.getElementById("interiorExtras");
+ e.innerHTML="";ie.innerHTML="";
+ const type=extraType();
+ const upholsteryNames={fabric:"Tissu",leather:"Cuir",alcantara:"Alcantara"};
+ const materialOption={fabric:"extraction",leather:"leather",alcantara:"alcantara"}[type];
+ const materialLabel={fabric:"Extraction textiles",leather:"Cuir + soin",alcantara:"Alcantara + soin"}[type];
+
+ const mat=EXTRA.find(x=>x[0]===materialOption);
+ if(mat){
+   const d=document.createElement("div");d.className="option";
+   d.innerHTML=`<div><b>${materialLabel}</b><br><small>Sellerie ${upholsteryNames[type]} • +${mat[2]} € • +${mat[3]} min</small></div>`;
+   const b=document.createElement("button");b.textContent=S.extras[mat[0]]?"Ajouté ✓":"Ajouter";if(S.extras[mat[0]])b.className="on";
+   b.onclick=()=>{S.extras[mat[0]]=!S.extras[mat[0]];refresh()};
+   d.appendChild(b);ie.appendChild(d);
+ }
+
+ EXTRA.forEach(x=>{
+   if(["extraction","leather","alcantara"].includes(x[0]))return;
+   if(x[4]!=="all")return;
+   let d=document.createElement("div");d.className="option";
+   d.innerHTML=`<div><b>${x[1]}</b><br><small>+${x[2]} € • +${x[3]} min</small></div>`;
+   let b=document.createElement("button");b.textContent=S.extras[x[0]]?"Ajouté ✓":"Ajouter";if(S.extras[x[0]])b.className="on";
+   b.onclick=()=>{S.extras[x[0]]=!S.extras[x[0]];refresh()};
+   d.appendChild(b);e.appendChild(d)
+ })
+}
+function renderDiscount(){
+ const e=document.getElementById("discount"),r=record(),ok=!!r&&r.count>=3;e.innerHTML="";
+ [["none","Aucune remise",true],["loyalty","⭐ Fidélité −10 €",ok],["c5","Remise commerciale 5 %",true],["c10","Remise commerciale 10 %",true]].forEach(x=>{let b=document.createElement("button");b.className="choice"+(S.discount===x[0]?" active":"");b.textContent=x[1];b.disabled=!x[2];b.onclick=()=>{S.discount=x[0];calc();renderDiscount()};e.appendChild(b)});
+ if(!ok&&S.discount==="loyalty"){S.discount="none";calc()}
+}
+function renderCeramic(){
+ const e=document.getElementById("ceramic");e.innerHTML="";
+ const exteriorPremium=S.exterior==="premium";
+ CER.forEach(x=>{
+   const b=document.createElement("button");b.className="choice"+(S.ceramic===x[0]?" active":"");
+   b.textContent=x[1];if(x[2]){b.innerHTML="<b>"+x[1]+"</b><small>+"+x[2]+" € • "+x[3]+" min</small>";}
+   if(x[0]!=="none"&&!exteriorPremium){b.disabled=true;b.title="Extérieur Premium requis";}
+   b.onclick=()=>{S.ceramic=x[0];refresh()};e.appendChild(b);
+ });
+ document.getElementById("ceramicInfo").innerHTML=S.ceramic==="none"
+   ?'<div class="notice">Pour une vraie céramique, sélectionne d’abord <b>Extérieur Premium</b>. Cela évite de poser un coating sur une carrosserie insuffisamment préparée.</div>'
+   :`<div class="notice"><b>${get(CER,S.ceramic)[1]}</b> : ${get(CER,S.ceramic)[4]}.<br>La préparation est assurée par <b>Extérieur Premium</b>. Une correction peinture supplémentaire reste possible si nécessaire.<br><small>Le temps de durcissement du produit se fait ensuite hors présence du client.</small></div>`;
+}
+function get(a,k){return a.find(x=>x[0]===k)||a[0]}
+function calc(){
+ const f=get(V,S.vehicle)[2],sf=get(STATES,S.state)[2];let p=0,m=0,n=0,lines=[];
+ if(S.ceramic!=="none" && S.exterior!=="premium"){S.ceramic="none";}
+ const add=(arr,key,stateSensitive=true,label="")=>{
+  let x=get(arr,key);if(!x||x[0]==="none")return;
+  let mult=stateSensitive?sf:1;p+=x[2]*f*mult;m+=x[3]*f*mult;n++;
+  lines.push([label?label+" "+x[1]:x[1],Math.round(x[2]*f*mult/5)*5]);
+ };
+ add(INT,S.interior,true,"Intérieur");add(EXT,S.exterior,true,"Extérieur");add(CORR,S.correction,false);add(CER,S.ceramic,false);add(OPT,S.optics,false);add(GLASS,S.glass,false);
+ EXTRA.forEach(x=>{if(S.extras[x[0]]){p+=x[2]*f;m+=x[3]*f;n++;lines.push([x[1],Math.round(x[2]*f/5)*5])}});
+ if(S.place==="home"){p+=20;m+=15;lines.push(["Déplacement à domicile",20])}
+ let d=0;if(S.discount==="loyalty")d=10;if(S.discount==="c5")d=Math.round(p*.05);if(S.discount==="c10")d=Math.round(p*.10);
+ if(d){p-=d;lines.push(["Remise",-d])}
+ p=Math.max(0,Math.round(p/5)*5);m=Math.round(m);
+ document.getElementById("total").textContent=p+" €";
+ document.getElementById("time").textContent=(Math.floor(m/60)?Math.floor(m/60)+"h ":"")+(m%60?m%60+" min":"");
+ document.getElementById("summary").textContent=n?n+" élément(s) sélectionné(s)":"Choisis tes prestations";
+ document.getElementById("control").textContent=n?`Contrôle interne • ${document.getElementById("time").textContent} • prix client ${p} €`:"Sélectionne au moins une prestation.";
+ return{p,m,lines};
+}
+function refresh(){group("vehicle",V,"vehicle");group("state",STATES,"state");group("place",PLACES,"place");group("interior",INT,"interior");group("upholstery",[["fabric","Tissu"],["leather","Cuir"],["alcantara","Alcantara"]],"upholstery");group("exterior",EXT,"exterior");group("correction",CORR,"correction");group("optics",OPT,"optics");group("glass",GLASS,"glass");renderCeramic();renderOptions();renderDiscount();calc()}
+function quoteDescription(label){
+ const d={
+  "Intérieur Essentiel":"Aspiration, dépoussiérage, nettoyage des surfaces et finition de l’habitacle. La sellerie est traitée selon son matériau.",
+  "Intérieur Classique":"Nettoyage approfondi de l’habitacle, plastiques, surfaces et finition. La sellerie est traitée selon son matériau.",
+  "Intérieur Premium":"Nettoyage poussé de l’habitacle avec remise à niveau et finition complète. La sellerie est traitée selon son matériau.",
+  "Extérieur Essentiel":"Prélavage, lavage manuel, séchage et finition rapide.",
+  "Extérieur Classique":"Prélavage, lavage manuel, séchage et finition soignée de la carrosserie.",
+  "Extérieur Premium":"Préparation complète, lavage, décontamination et protection de la carrosserie.",
+  "One-Step":"Préparation, correction légère en une étape et finition.",
+  "Correction 2 étapes":"Préparation, correction en deux étapes et finition.",
+  "CQUARTZ UK Edition 30":"Céramique PRO CQUARTZ UK Edition 30 : application panneau par panneau, essuyage et contrôle des high spots.",
+  "Hendlex DC60":"Revêtement PRO Hendlex DC60 : application, contrôle et mise en œuvre selon les préconisations du produit.",
+  "Rénovation optiques — paire":"Rénovation des deux optiques avec préparation et finition.",
+  "Rénovation + polymérisation — paire":"Rénovation des deux optiques avec protection par polymérisation.",
+  "Glaco — vitres":"Préparation des vitrages et application d’une protection hydrophobe.",
+  "Poils légers":"Retrait renforcé des poils légers.",
+  "Poils importants":"Retrait renforcé des poils importants.",
+  "Taches importantes":"Traitement de taches importantes.",
+  "Extraction textiles":"Extraction des textiles avec injection/extraction.",
+  "Cuir + soin":"Nettoyage, dégraissage adapté et soin des surfaces en cuir.",
+  "Alcantara + soin":"Nettoyage adapté et soin des surfaces en Alcantara.",
+  "Carnauba":"Application d’une cire Carnauba.",
+  "Wax":"Application d’une protection Wax.",
+  "Déplacement à domicile":"Forfait déplacement local pour intervention à domicile.",
+  "Remise":"Remise commerciale ou fidélité appliquée."
+ };
+ return d[label] || "Prestation / option sélectionnée.";
+}
+function generateQuote(){
+  const name=document.getElementById("client").value.trim();
+  if(!name){alert("Renseigne le nom du client.");return}
+  const q=calc();
+  if(!q.lines.length){alert("Sélectionne au moins une prestation.");return}
+  const now=new Date();
+  const num="CAC-"+now.getFullYear()+String(now.getMonth()+1).padStart(2,"0")+String(now.getDate()).padStart(2,"0")+"-"+String(Date.now()).slice(-4);
+  document.getElementById("qNumber").textContent=num;
+  document.getElementById("qDate").textContent=now.toLocaleDateString("fr-FR");
+  const model=document.getElementById("model").value.trim();
+  const plate=document.getElementById("plate").value.trim();
+  const phone=document.getElementById("phone").value.trim();
+  const place=get(PLACES,S.place)[1], state=get(STATES,S.state)[1];
+  document.getElementById("qInfo").innerHTML=
+    `<b>Client :</b> ${name||"—"}<br><b>Téléphone :</b> ${phone||"—"}<br>`+
+    `<b>Véhicule :</b> ${model||"—"} — ${get(V,S.vehicle)[1]}<br><b>Sellerie :</b> ${({fabric:"Tissu",leather:"Cuir",alcantara:"Alcantara"})[S.upholstery]}<br>`+
+    `<b>Immatriculation :</b> ${plate||"—"}<br><b>Lieu :</b> ${place}<br><b>État :</b> ${state}`;
+  const tbody=document.getElementById("qLines"); tbody.innerHTML="";
+  q.lines.forEach(x=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${x[0]}</b></td><td>${quoteDescription(x[0])}</td><td>${x[1]<0?"− ":""}${Math.abs(x[1])} €</td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById("qTotal").textContent=`TOTAL : ${q.p} €`;
+  document.getElementById("printArea").style.display="block";
+  document.getElementById("printArea").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function printQuote(){
+  if(!ensureQuoteGenerated()) return;
+  setV10Status("Ouverture de l'impression native du terminal. Sélectionne FICHERO si l'imprimante apparaît.");
+  setTimeout(()=>window.print(),120);
+}
+function quoteShareText(){
+  const q=calc();
+  const name=document.getElementById("client").value.trim();
+  const phone=document.getElementById("phone").value.trim();
+  const model=document.getElementById("model").value.trim();
+  const plate=document.getElementById("plate").value.trim();
+  const place=get(PLACES,S.place)[1], state=get(STATES,S.state)[1];
+  const lines=q.lines.map(x=>`• ${x[0]} : ${x[1]<0?"- ":""}${Math.abs(x[1])} €`).join("\n");
+  return `DEVIS CYRILAUTO CLEAN
+
+Client : ${name||"—"}
+Téléphone : ${phone||"—"}
+Véhicule : ${model||"—"} — ${get(V,S.vehicle)[1]}
+Immatriculation : ${plate||"—"}
+Lieu : ${place}
+État : ${state}
+
+Prestations :
+${lines}
+
+TOTAL : ${q.p} €
+
+Devis valable 30 jours. Toute prestation non prévue fera l’objet d’un accord préalable.`;
+}
+function setV10Status(msg,ok=true){
+  const e=document.getElementById("v10Status");
+  e.style.display="block"; e.className="status "+(ok?"ok":"warn"); e.textContent=msg;
+}
+function ensureQuoteGenerated(){
+  const q=calc();
+  if(!q.lines.length){alert("Sélectionne au moins une prestation.");return false;}
+  if(getComputedStyle(document.getElementById("printArea")).display==="none") generateQuote();
+  return true;
+}
+function quotePDFData(){
+  const q=calc();
+  return {
+    q,
+    name:document.getElementById("client").value.trim(),
+    phone:document.getElementById("phone").value.trim(),
+    model:document.getElementById("model").value.trim(),
+    plate:document.getElementById("plate").value.trim(),
+    place:get(PLACES,S.place)[1],
+    state:get(STATES,S.state)[1],
+    number:document.getElementById("qNumber").textContent || ("CAC-"+Date.now()),
+    date:document.getElementById("qDate").textContent || new Date().toLocaleDateString("fr-FR")
+  };
+}
+async function buildPDF(){
+  if(!ensureQuoteGenerated()) return null;
+  if(!window.jspdf){setV10Status("Le module PDF n'est pas chargé. Vérifie Internet puis réessaie.",false);return null;}
+
+  const d=quotePDFData(), {jsPDF}=window.jspdf;
+  const pdf=new jsPDF({unit:"mm",format:"a4"});
+  const L=16, R=194;
+  let y=16;
+
+  function header(){
+    pdf.setTextColor(23,54,93);
+    pdf.setFontSize(21); pdf.setFont(undefined,"bold");
+    pdf.text("CyrilAutoClean",L,y);
+    pdf.setFontSize(15); pdf.text("DEVIS",R,y,{align:"right"});
+    y+=7;
+    pdf.setTextColor(90,100,115); pdf.setFontSize(9); pdf.setFont(undefined,"normal");
+    pdf.text(d.number,R,y,{align:"right"}); y+=5;
+    pdf.text(d.date,R,y,{align:"right"}); y+=8;
+    pdf.setDrawColor(23,54,93); pdf.line(L,y,R,y); y+=9;
+  }
+  function newPage(){ pdf.addPage(); y=16; header(); }
+  function ensureSpace(h){ if(y+h>275) newPage(); }
+
+  header();
+
+  pdf.setTextColor(23,33,43); pdf.setFontSize(10);
+  [
+    ["Client",d.name],
+    ["Téléphone",d.phone||"—"],
+    ["Véhicule",(d.model||"—")+" — "+get(V,S.vehicle)[1]],
+    ["Sellerie",({fabric:"Tissu",leather:"Cuir",alcantara:"Alcantara"})[S.upholstery]||"—"],
+    ["Immatriculation",d.plate||"—"],
+    ["Lieu",d.place],
+    ["État",d.state]
+  ].forEach(([a,b])=>{
+    pdf.setFont(undefined,"bold"); pdf.text(a+" :",L,y);
+    pdf.setFont(undefined,"normal"); pdf.text(String(b),48,y); y+=6;
+  });
+
+  y+=5;
+  pdf.setFont(undefined,"bold"); pdf.setFontSize(10);
+  pdf.text("Prestation",L,y);
+  pdf.text("Description",70,y);
+  pdf.text("Montant",R,y,{align:"right"});
+  y+=4; pdf.setDrawColor(210,220,230); pdf.line(L,y,R,y); y+=7;
+
+  d.q.lines.forEach(([label,amount])=>{
+    const desc=quoteDescription(label);
+    const labelLines=pdf.splitTextToSize(String(label),48);
+    const descLines=pdf.splitTextToSize(String(desc),108);
+    const rowH=Math.max(labelLines.length,descLines.length)*4.8+5;
+    ensureSpace(rowH+2);
+
+    pdf.setTextColor(23,33,43);
+    pdf.setFontSize(9.5); pdf.setFont(undefined,"bold");
+    pdf.text(labelLines,L,y);
+    pdf.setFont(undefined,"normal"); pdf.text(descLines,70,y);
+    pdf.setFont(undefined,"bold");
+    pdf.text((amount<0?"− ":"")+Math.abs(amount)+" €",R,y,{align:"right"});
+
+    y+=rowH;
+    pdf.setDrawColor(220,226,232); pdf.line(L,y-2,R,y-2); y+=3;
+  });
+
+  ensureSpace(55);
+  y+=3; pdf.setDrawColor(23,54,93); pdf.line(L,y,R,y); y+=10;
+  pdf.setTextColor(23,33,43); pdf.setFontSize(16); pdf.setFont(undefined,"bold");
+  pdf.text("TOTAL : "+d.q.p+" €",R,y,{align:"right"});
+
+  y+=14; pdf.setTextColor(100,110,125); pdf.setFontSize(8.5); pdf.setFont(undefined,"normal");
+  [
+    "Devis valable 30 jours.",
+    "Le tarif est établi selon la catégorie du véhicule, son état déclaré ou constaté et les prestations sélectionnées.",
+    "Toute différence importante constatée avant intervention peut entraîner un ajustement après accord du client.",
+    "Toute prestation non prévue au devis fera l'objet d'un accord préalable.",
+    "Une remise commerciale est facultative et visible sur le devis. La remise fidélité est réservée aux clients concernés.",
+    "La génération du devis ne compte pas comme une prestation réalisée."
+  ].forEach(t=>{
+    const ls=pdf.splitTextToSize(t,178); ensureSpace(ls.length*4.5+2);
+    pdf.text(ls,L,y); y+=4.5*ls.length+1;
+  });
+
+  ensureSpace(35); y+=8;
+  pdf.setTextColor(23,33,43); pdf.setFontSize(12); pdf.setFont(undefined,"bold");
+  pdf.text("Bon pour accord",L,y); y+=9;
+  pdf.setFontSize(9.5); pdf.setFont(undefined,"normal");
+  pdf.text("Nom / signature :",L,y); y+=8; pdf.line(L,y,150,y); y+=12;
+  pdf.text("Date :",L,y); pdf.line(38,y,90,y);
+
+  return {pdf,name:"Devis_"+d.number.replace(/[^a-z0-9_-]/gi,"_")+".pdf",data:d};
+}
+async function createPDF(){
+  const r=await buildPDF();if(!r)return;r.pdf.save(r.name);
+  setV10Status("PDF créé : "+r.name+" — tu peux ensuite l'ouvrir dans FICHERO → « Imprimer des fichiers ».");
+}
+async function emailQuote(){
+  const r=await buildPDF();if(!r)return;
+  const blob=r.pdf.output("blob"),file=new File([blob],r.name,{type:"application/pdf"});
+  if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+    try{
+      await navigator.share({title:"Devis CyrilAutoClean",text:"Bonjour, veuillez trouver votre devis en pièce jointe.",files:[file]});
+      setV10Status("Menu de partage ouvert : choisis ton application e-mail.");
+      return;
+    }catch(e){if(e && e.name==="AbortError")return;}
+  }
+  r.pdf.save(r.name);
+  const subject=encodeURIComponent("Devis CyrilAutoClean "+r.data.number);
+  const body=encodeURIComponent(`Bonjour ${r.data.name||""},\n\nVeuillez trouver votre devis CyrilAutoClean en pièce jointe.\n\nCordialement,\nCyrilAutoClean`);
+  location.href="mailto:?subject="+subject+"&body="+body;
+  setV10Status("Le PDF a été enregistré. Ton application e-mail a été ouverte ; joins le PDF si la pièce jointe automatique n'est pas proposée.",false);
+}
+async function shareQuote(){
+  const r=await buildPDF();if(!r)return;
+  const blob=r.pdf.output("blob"),file=new File([blob],r.name,{type:"application/pdf"});
+  if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+    try{await navigator.share({title:"Devis CyrilAutoClean",text:"Devis "+r.data.number,files:[file]});return;}
+    catch(e){if(e && e.name==="AbortError")return;}
+  }
+  r.pdf.save(r.name);
+  if(navigator.clipboard){try{await navigator.clipboard.writeText(quoteShareText());setV10Status("PDF enregistré et texte du devis copié.");return;}catch(e){}}
+  setV10Status("PDF enregistré. Utilise le menu Partager du terminal.",false);
+}
+function closeQuote(){document.getElementById("printArea").style.display="none"}
+function resetAll(){S={vehicle:"compact",state:"normal",place:"shop",interior:"none",upholstery:"fabric",exterior:"none",correction:"none",ceramic:"none",optics:"none",glass:"none",discount:"none",extras:{}};document.querySelectorAll("input").forEach(i=>i.value="");refresh();showClient(null);closeQuote()}
+document.querySelectorAll("input").forEach(i=>i.addEventListener("input",()=>{showClient(record());renderDiscount()}));
+refresh();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>
