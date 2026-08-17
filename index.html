@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#17365d">
-<title>CyrilAutoClean — V5</title>
+<title>CyrilAutoClean — V5.2</title>
 <style>
 :root{--navy:#17365d;--blue:#2f75b5;--bg:#f3f6fa;--line:#d8e0e9;--text:#17212b;--muted:#68768d;--ok:#eaf7ee;--warn:#fff7df}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
@@ -21,10 +21,27 @@ input{width:100%;height:48px;border:2px solid var(--line);border-radius:13px;pad
 .notice{padding:10px 12px;background:#edf4fb;color:#385777;border-radius:12px;margin-top:10px;font-size:13px;line-height:1.4}
 .total{position:sticky;bottom:8px;z-index:5;background:#122d4b;color:#fff;border-radius:20px;padding:15px 17px;box-shadow:0 6px 25px #0003}.totalrow{display:flex;justify-content:space-between;align-items:center;gap:12px}.total small{opacity:.8}.total strong{font-size:36px}.summary{font-size:13px;margin-top:3px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.btn{height:53px;border-radius:14px;border:2px solid var(--line);background:#fff;font-weight:850;font-size:15px}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 @media(max-width:600px){.row{grid-template-columns:1fr}.choices{grid-template-columns:1fr 1fr}.choice{font-size:14px}.total strong{font-size:31px}}
+
+/* Devis imprimable */
+.quote-preview{display:none}
+.quote-sheet{background:#fff;color:#17212b;border:1px solid #d8e0e9;border-radius:16px;padding:28px;margin:18px 0}
+.quote-head{display:flex;justify-content:space-between;gap:20px;border-bottom:3px solid #17365d;padding-bottom:14px;margin-bottom:18px}
+.quote-brand{font-size:25px;font-weight:900;color:#17365d}.quote-title{font-size:18px;margin-top:4px}
+.quote-meta{text-align:right;font-size:12px;color:#68768d}.quote-info{line-height:1.55;margin-bottom:20px}
+.quote-table{width:100%;border-collapse:collapse;margin:12px 0 18px}.quote-table th,.quote-table td{padding:9px 6px;border-bottom:1px solid #d8e0e9;text-align:left;vertical-align:top}.quote-table th:last-child,.quote-table td:last-child{text-align:right;white-space:nowrap}
+.quote-total{text-align:right;font-size:25px;font-weight:900;margin:15px 0}.quote-conditions{font-size:12px;line-height:1.5;color:#68768d;border-top:1px solid #d8e0e9;padding-top:12px}.quote-sign{margin-top:24px;font-size:13px}.quote-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+@media print{
+  body{background:#fff!important}
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block!important}
+  .quote-sheet{border:0!important;border-radius:0!important;margin:0!important;padding:12mm!important;box-shadow:none!important}
+  .quote-actions{display:none!important}
+  @page{size:A4;margin:0}
+}
 </style>
 </head>
 <body>
-<header><h1>CyrilAutoClean</h1><p>V5.1 • constructeur de devis • detailing automobile</p></header>
+<header><h1>CyrilAutoClean</h1><p>V5.2 • constructeur de devis • detailing automobile</p></header>
 <main>
 <section class="card">
 <h2>👤 Client</h2>
@@ -102,6 +119,40 @@ input{width:100%;height:48px;border:2px solid var(--line);border-radius:13px;pad
 <button class="btn primary" onclick="generateQuote()">Générer le devis</button>
 <button class="btn" onclick="resetAll()">Nouveau devis</button>
 </div>
+
+<section id="printArea" class="quote-preview">
+  <div class="quote-sheet">
+    <div class="quote-head">
+      <div>
+        <div class="quote-brand">CyrilAutoClean</div>
+        <div class="quote-title">DEVIS DE PRESTATION — DETAILING AUTOMOBILE</div>
+      </div>
+      <div class="quote-meta"><div id="qNumber"></div><div id="qDate"></div></div>
+    </div>
+    <div id="qInfo" class="quote-info"></div>
+    <table class="quote-table">
+      <thead><tr><th>Prestation</th><th>Description</th><th>Montant</th></tr></thead>
+      <tbody id="qLines"></tbody>
+    </table>
+    <div id="qTotal" class="quote-total"></div>
+    <div class="quote-conditions">
+      <b>Conditions</b><br>
+      Devis valable 30 jours. Le tarif est établi selon la catégorie du véhicule, son état déclaré ou constaté
+      et les prestations sélectionnées. Toute différence importante constatée avant intervention peut entraîner
+      un ajustement après accord du client. Toute prestation non prévue au devis fera l'objet d'un accord préalable.
+      Une remise commerciale est facultative et visible sur le devis. La remise fidélité est réservée aux clients concernés.
+    </div>
+    <div class="quote-sign"><b>Bon pour accord</b><br><br>
+      Nom / signature : ___________________________________________<br><br>
+      Date : ____ / ____ / ______
+    </div>
+    <div class="quote-actions">
+      <button class="btn primary" onclick="printQuote()">🖨️ Imprimer / PDF</button>
+      <button class="btn" onclick="closeQuote()">✏️ Modifier</button>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <script>
@@ -203,8 +254,56 @@ function calc(){
  return{p,m,lines};
 }
 function refresh(){group("vehicle",V,"vehicle");group("state",STATES,"state");group("place",PLACES,"place");group("interior",INT,"interior");group("exterior",EXT,"exterior");group("correction",CORR,"correction");group("optics",OPT,"optics");group("glass",GLASS,"glass");renderCeramic();renderOptions();renderDiscount();calc()}
-function generateQuote(){let name=document.getElementById("client").value.trim();if(!name){alert("Renseigne le nom du client.");return}let q=calc();if(!q.lines.length){alert("Sélectionne au moins une prestation.");return}recordSale(q.p);alert("DEVIS CYRILAUTO CLEAN\n\nClient : "+name+"\nVéhicule : "+document.getElementById("model").value+"\n\n"+q.lines.map(x=>x[0]+" : "+x[1]+" €").join("\n")+"\n\nTOTAL : "+q.p+" €\nTemps estimé : "+document.getElementById("time").textContent)}
-function resetAll(){S={vehicle:"compact",state:"normal",place:"shop",interior:"none",exterior:"none",correction:"none",ceramic:"none",optics:"none",glass:"none",discount:"none",extras:{}};document.querySelectorAll("input").forEach(i=>i.value="");refresh();showClient(null)}
+function quoteDescription(label){
+  const d={
+    "Intérieur Essentiel":"Aspiration, nettoyage et finition de l’habitacle selon la formule.",
+    "Intérieur Classique":"Nettoyage approfondi de l’habitacle et finition selon la formule.",
+    "Intérieur Premium":"Nettoyage poussé de l’habitacle et remise à niveau selon la formule.",
+    "Extérieur Essentiel":"Prélavage, lavage manuel et finition selon la formule.",
+    "Extérieur Classique":"Prélavage, lavage manuel et finition soignée de la carrosserie.",
+    "Extérieur Premium":"Préparation, lavage, décontamination et protection de la carrosserie.",
+    "One-Step":"Correction carrosserie en une étape avec préparation et finition.",
+    "Correction 2 étapes":"Correction carrosserie en deux étapes avec préparation et finition.",
+    "CQUARTZ UK Edition 30":"Application d’une céramique PRO après préparation de la carrosserie, pose panneau par panneau et contrôle des high spots.",
+    "Hendlex DC60":"Application du revêtement PRO, contrôle de l’application et mise en œuvre selon les préconisations du produit.",
+    "Rénovation optiques — paire":"Rénovation des deux optiques avec préparation et finition.",
+    "Rénovation + polymérisation — paire":"Rénovation des deux optiques avec protection par polymérisation.",
+    "Glaco — vitres":"Préparation des vitrages et application d’une protection hydrophobe.",
+    "Déplacement à domicile":"Forfait déplacement local.",
+    "Remise":"Remise appliquée."
+  };
+  return d[label] || "Option complémentaire.";
+}
+function generateQuote(){
+  const name=document.getElementById("client").value.trim();
+  if(!name){alert("Renseigne le nom du client.");return}
+  const q=calc();
+  if(!q.lines.length){alert("Sélectionne au moins une prestation.");return}
+  const now=new Date();
+  const num="CAC-"+now.getFullYear()+String(now.getMonth()+1).padStart(2,"0")+String(now.getDate()).padStart(2,"0")+"-"+String(Date.now()).slice(-4);
+  document.getElementById("qNumber").textContent=num;
+  document.getElementById("qDate").textContent=now.toLocaleDateString("fr-FR");
+  const model=document.getElementById("model").value.trim();
+  const plate=document.getElementById("plate").value.trim();
+  const phone=document.getElementById("phone").value.trim();
+  const place=get(PLACES,S.place)[1], state=get(STATES,S.state)[1];
+  document.getElementById("qInfo").innerHTML=
+    `<b>Client :</b> ${name||"—"}<br><b>Téléphone :</b> ${phone||"—"}<br>`+
+    `<b>Véhicule :</b> ${model||"—"} — ${get(V,S.vehicle)[1]}<br>`+
+    `<b>Immatriculation :</b> ${plate||"—"}<br><b>Lieu :</b> ${place}<br><b>État :</b> ${state}`;
+  const tbody=document.getElementById("qLines"); tbody.innerHTML="";
+  q.lines.forEach(x=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${x[0]}</b></td><td>${quoteDescription(x[0])}</td><td>${x[1]<0?"− ":""}${Math.abs(x[1])} €</td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById("qTotal").textContent=`TOTAL : ${q.p} €`;
+  document.getElementById("printArea").style.display="block";
+  document.getElementById("printArea").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function printQuote(){window.print()}
+function closeQuote(){document.getElementById("printArea").style.display="none"}
+function resetAll(){S={vehicle:"compact",state:"normal",place:"shop",interior:"none",exterior:"none",correction:"none",ceramic:"none",optics:"none",glass:"none",discount:"none",extras:{}};document.querySelectorAll("input").forEach(i=>i.value="");refresh();showClient(null);closeQuote()}
 document.querySelectorAll("input").forEach(i=>i.addEventListener("input",()=>{showClient(record());renderDiscount()}));
 refresh();
 </script>
