@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#17365d">
-<title>CyrilAutoClean V2</title>
+<title>CyrilAutoClean V3</title>
 <style>
 :root{--navy:#17365d;--blue:#2f75b5;--bg:#f4f7fb;--card:#fff;--text:#17212b;--muted:#667085;--line:#e4e7ec;--green:#1f8f4c;--soft:#eaf3fb;--danger:#b42318}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
@@ -24,10 +24,15 @@ input{width:100%;height:48px;border:1px solid #d0d5dd;border-radius:12px;padding
 @media(max-width:520px){.row{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.quote{padding:14px}.quote h1{font-size:24px}.quote table{font-size:12px}}
 @media print{body{background:white}.app,.no-print{display:none!important}.quote{display:block!important;padding:25px;max-width:900px}.quote .actions{display:none}}
 </style>
-</head>
+<style>
+.historyStatus{padding:12px;border:1px solid var(--line);border-radius:12px;background:#f7f9fc;color:var(--muted);line-height:1.45}
+.historyStatus.good{background:#edf9f1;border-color:#b7e1c3;color:#176b38}
+.historyStatus.warn{background:#fff8e8;border-color:#f1d58a;color:#7a5a00}
+.historyBtn{border:0;border-radius:10px;padding:10px 14px;background:var(--blue);color:#fff;font-weight:800;font-size:14px}
+</style></head>
 <body>
 <div class="app">
-<header><div class="brand">CyrilAutoClean</div><div class="sub">V2 • constructeur de devis • detailing automobile</div></header>
+<header><div class="brand">CyrilAutoClean</div><div class="sub">V3 • constructeur de devis • detailing automobile</div></header>
 <main>
 <div class="card">
 <h2>Client & véhicule</h2>
@@ -39,6 +44,12 @@ input{width:100%;height:48px;border:1px solid #d0d5dd;border-radius:12px;padding
 <div class="field"><label>Véhicule / modèle</label><input id="model" placeholder="Ex. Kia Proceed"></div>
 <div class="field"><label>Immatriculation (optionnel)</label><input id="plate" placeholder="AA-123-AA"></div>
 </div>
+</div>
+
+<div class="card" id="historyCard">
+<h2>📱 Historique client</h2>
+<div id="historyStatus" class="historyStatus">Saisis le téléphone du client pour vérifier son historique.</div>
+<div id="historyAction" style="margin-top:8px"></div>
 </div>
 
 <div class="card"><h2>1. Véhicule</h2><div class="hint">La taille adapte automatiquement prix et temps.</div><div class="grid" id="vehicles"></div></div>
@@ -140,34 +151,47 @@ function fmtH(h){let m=Math.round(h*60);let hh=Math.floor(m/60),mm=m%60;return h
 function round5(x){return Math.round(x/5)*5}
 function calc(){
  let c=D.coef[s.vehicle||"Citadine / compacte"],total=0,hrs=0,lines=[];
- const add=(x,desc)=>{if(!x||x==="Aucun"||x==="Aucune")return;let p=round5((D.price[x]||0)*c);let h=(D.hours[x]||0)*c;total+=p;hrs+=h;lines.push([x,desc,p,h])};
+ const stateMul={Normal:1,Sale:1.12,"Très sale":1.25,"État extrême":1.40}[s.state]||1;
+ const add=(x,desc,affected=true)=>{
+   if(!x||x==="Aucun"||x==="Aucune")return;
+   let p=(D.price[x]||0)*c*(affected?stateMul:1);
+   let h=(D.hours[x]||0)*c*(affected?stateMul:1);
+   p=round5(p);total+=p;hrs+=h;lines.push([x,desc,p,h]);
+ };
  add(s.interior,"Aspiration, nettoyage et finition de l’habitacle selon la formule");
  add(s.exterior,"Prélavage, lavage manuel et finition selon la formule");
  add(s.correction,"Préparation complète + correction et finition");
  add(s.optics,"Rénovation des optiques en paire selon la formule");
  add(s.glass,"Préparation des vitrages + protection hydrophobe");
- s.options.forEach(x=>add(x,"Option complémentaire"));
- let stateExtra={Normal:0,Sale:10,"Très sale":20,"État extrême":35}[s.state];
- if(stateExtra){total+=round5(stateExtra*c);hrs+=.25*c;lines.push(["Ajustement état",`État déclaré : ${s.state.toLowerCase()}`,round5(stateExtra*c),.25*c])}
- let before=total, discount=0;
- if(s.tariff==="Tarif fidélité") discount=round5(total*.10);
+ s.options.forEach(x=>add(x,"Option complémentaire",false));
+
+ let discount=0;
+ if(s.tariff==="Tarif fidélité") discount=round5(total*.05);
  if(s.tariff==="Remise commerciale 5%") discount=round5(total*.05);
  if(s.tariff==="Remise commerciale 10%") discount=round5(total*.10);
- if(discount){total-=discount;lines.push([s.tariff,"Remise appliquée",-discount,0])}
- // Déplacement: prix séparé seulement à domicile, sans gonfler les formules.
- if(s.location==="À domicile / chez le client"){let travel=20;total+=travel;lines.push(["Déplacement","Forfait déplacement local",travel,.25])}
+ if(discount){ total-=discount; lines.push([s.tariff,"Remise appliquée",-discount,0]); }
+
+ if(s.location==="À domicile / chez le client"){
+   total+=20; lines.push(["Déplacement","Forfait déplacement local",20,.25]); hrs+=.25;
+ }
+
  document.getElementById("total").textContent=round5(total)+" €";
- document.getElementById("summary").textContent=lines.length?`${lines.filter(x=>x[2]>=0).length} prestation(s) • temps de travail estimé : ${fmtH(hrs)}`:"Choisis au moins une prestation";
+ document.getElementById("summary").textContent=lines.length
+   ? `${lines.filter(x=>x[2]>=0).length} prestation(s) • temps de travail estimé : ${fmtH(hrs)}`
+   : "Choisis au moins une prestation";
+
  let msg="";
  if(!s.vehicle) msg="⚠️ Sélectionne une catégorie de véhicule avant de générer le devis.";
  else if(!lines.length) msg="Sélectionne une formule intérieur, extérieur, correction, optiques ou vitrage.";
  else msg=`Contrôle interne : ${fmtH(hrs)} de travail prévu • prix client ${round5(total)} €`;
  document.getElementById("control").textContent=msg;
- return {total,hrs,lines,before,discount};
+ return {total,hrs,lines,before:total+discount,discount};
 }
+
 function makeQuote(){
  if(!s.vehicle){alert("Sélectionne d'abord une catégorie de véhicule.");return}
  const r=calc(); if(!r.lines.length){alert("Choisis au moins une prestation.");return}
+ cacRecordCompleted(r.total);
  document.querySelector(".app").style.display="none";document.getElementById("quote").style.display="block";
  let now=new Date();document.getElementById("qnum").textContent="CAC-"+now.getFullYear()+String(now.getMonth()+1).padStart(2,"0")+String(now.getDate()).padStart(2,"0")+"-"+String(now.getHours()).padStart(2,"0")+String(now.getMinutes()).padStart(2,"0");
  document.getElementById("qdate").textContent=now.toLocaleDateString("fr-FR");
@@ -180,7 +204,64 @@ function makeQuote(){
 }
 function back(){document.getElementById("quote").style.display="none";document.querySelector(".app").style.display="block"}
 function resetAll(){s={vehicle:null,state:"Normal",location:"Chez CyrilAutoClean",interior:"Aucun",exterior:"Aucun",correction:"Aucune",optics:"Aucune",glass:"Aucun",tariff:"Tarif normal",options:new Set()};["client","phone","model","plate"].forEach(id=>document.getElementById(id).value="");render();window.scrollTo(0,0)}
-render();
+
+/* ===== V3 CLIENT HISTORY / FIDELITY ===== */
+const CAC_HISTORY_KEY="cyrilautoclean_history_v3";
+
+function cacLoadHistory(){
+  try { return JSON.parse(localStorage.getItem(CAC_HISTORY_KEY)||"{}"); }
+  catch(e){ return {}; }
+}
+function cacSaveHistory(db){
+  localStorage.setItem(CAC_HISTORY_KEY,JSON.stringify(db));
+}
+function cacPhone(){
+  return (document.getElementById("phone").value||"").replace(/\D/g,"");
+}
+function cacClientRecord(){
+  const p=cacPhone(),db=cacLoadHistory();
+  return p && db[p] ? db[p] : null;
+}
+function cacUpdateHistory(){
+  const box=document.getElementById("historyStatus");
+  const act=document.getElementById("historyAction");
+  if(!box)return;
+  const r=cacClientRecord();
+  act.innerHTML="";
+  if(!r){
+    box.className="historyStatus";
+    box.textContent="🆕 Nouveau client — aucune remise fidélité disponible.";
+    return;
+  }
+  const n=r.count||0;
+  if(n>=3){
+    box.className="historyStatus good";
+    box.innerHTML=`⭐ <b>Client fidèle</b> — ${n} prestation(s) enregistrée(s).<br>Remise fidélité <b>−5 %</b> disponible.`;
+    const b=document.createElement("button");
+    b.className="historyBtn"; b.textContent="Appliquer la remise fidélité";
+    b.onclick=()=>{s.tariff="Tarif fidélité";render();window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});};
+    act.appendChild(b);
+  }else{
+    box.className="historyStatus warn";
+    box.innerHTML=`Client enregistré — ${n} prestation(s).<br>Encore <b>${3-n}</b> avant la remise fidélité −5 %.`;
+  }
+}
+function cacRecordCompleted(total){
+  const p=cacPhone(); if(!p)return;
+  const db=cacLoadHistory();
+  const r=db[p]||{count:0,ca:0};
+  r.count=(r.count||0)+1;
+  r.ca=round5((r.ca||0)+total);
+  r.last=new Date().toLocaleDateString("fr-FR");
+  r.name=document.getElementById("client").value||r.name||"";
+  db[p]=r;
+  cacSaveHistory(db);
+}
+document.getElementById("phone").addEventListener("input",cacUpdateHistory);
+document.getElementById("phone").addEventListener("change",cacUpdateHistory);
+/* =========================================== */
+
+render();cacUpdateHistory();
 </script>
 </body>
 </html>
