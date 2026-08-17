@@ -4,57 +4,65 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#17365d">
-<title>CyrilAutoClean</title>
+<title>CyrilAutoClean V2</title>
 <style>
-:root{--navy:#17365d;--blue:#2f75b5;--bg:#f4f7fb;--card:#fff;--text:#17212b;--muted:#667085;--green:#1f8f4c;--line:#e4e7ec;--yellow:#fff6d8}
+:root{--navy:#17365d;--blue:#2f75b5;--bg:#f4f7fb;--card:#fff;--text:#17212b;--muted:#667085;--line:#e4e7ec;--green:#1f8f4c;--soft:#eaf3fb;--danger:#b42318}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-header{background:linear-gradient(135deg,#17365d,#245b8f);color:white;padding:22px 18px 18px;position:sticky;top:0;z-index:5}
-.brand{font-size:24px;font-weight:800}.sub{opacity:.82;font-size:13px;margin-top:3px}
-main{max-width:760px;margin:auto;padding:14px 12px 90px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 2px 8px #00000008}
-h2{font-size:17px;margin:0 0 12px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{margin-bottom:11px}.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:0 0 6px}
-input,select{width:100%;height:48px;border:1px solid #d0d5dd;border-radius:12px;padding:0 12px;font-size:16px;background:white;color:var(--text)}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.choice{border:1.5px solid #d0d5dd;background:white;border-radius:13px;padding:13px 9px;min-height:60px;font-size:14px;font-weight:700;text-align:center;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.choice.active{border-color:var(--blue);background:#eaf3fb;color:#174f80;box-shadow:inset 0 0 0 1px var(--blue)}
-.option{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);padding:12px;border-radius:12px;margin:7px 0;background:#fff}
-.option button{border:0;border-radius:10px;padding:9px 13px;font-weight:800;background:#eef2f6}.option button.on{background:#dff4e7;color:#146c39}
-.total{background:#102a43;color:white;border-radius:16px;padding:17px;margin-top:12px;display:flex;justify-content:space-between;align-items:center}.total strong{font-size:26px}.muted{color:var(--muted);font-size:13px}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}button.primary,button.secondary{height:50px;border-radius:13px;border:0;font-size:15px;font-weight:800}.primary{background:var(--blue);color:white}.secondary{background:white;border:1px solid #ccd4dd!important;color:var(--text)}
-.quote{display:none}.quote h1{margin:0;color:var(--navy)}.quote .head{display:flex;justify-content:space-between;gap:10px;border-bottom:2px solid var(--navy);padding-bottom:12px}.quote table{width:100%;border-collapse:collapse;margin-top:16px}.quote td,.quote th{padding:9px 5px;border-bottom:1px solid var(--line);text-align:left}.quote td:last-child,.quote th:last-child{text-align:right}.quote .grand{font-size:22px;font-weight:900;text-align:right;margin-top:16px}.quote .conditions{margin-top:25px;font-size:12px;color:#555}.back{margin-bottom:10px}
-@media(max-width:520px){.row{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}}
-@media print{body{background:white}.app{display:none!important}.quote{display:block!important;padding:25px;max-width:800px;margin:auto}.quote .no-print{display:none}}
+header{background:linear-gradient(135deg,#17365d,#245b8f);color:#fff;padding:22px 18px 18px;position:sticky;top:0;z-index:10;box-shadow:0 2px 10px #0002}
+.brand{font-size:27px;font-weight:900;letter-spacing:-.4px}.sub{opacity:.88;font-size:13px;margin-top:4px}
+main{max-width:780px;margin:auto;padding:12px 12px 110px}.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:16px;margin:11px 0;box-shadow:0 2px 9px #00000008}
+h2{font-size:18px;margin:0 0 13px}.hint{font-size:12px;color:var(--muted);margin:-7px 0 12px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{margin-bottom:11px}.field:last-child{margin-bottom:0}.field label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin:0 0 6px}
+input{width:100%;height:48px;border:1px solid #d0d5dd;border-radius:12px;padding:0 12px;font-size:16px;background:#fff;color:var(--text)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.choice{border:1.5px solid #d0d5dd;background:#fff;border-radius:13px;padding:12px 9px;min-height:61px;font-size:14px;font-weight:800;text-align:center;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#1d6fb8}.choice.active{border-color:var(--blue);background:var(--soft);color:#174f80;box-shadow:inset 0 0 0 1px var(--blue)}
+.choice small{display:block;font-weight:600;color:var(--muted)}
+.option{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);padding:11px;border-radius:12px;margin:7px 0;background:#fff}.option b{font-size:14px}.option small{color:var(--muted)}
+.option button{border:0;border-radius:10px;padding:9px 12px;font-weight:900;background:#eef2f6;color:#344054;white-space:nowrap}.option button.on{background:#dff4e7;color:#146c39}
+.total{background:#102a43;color:white;border-radius:17px;padding:16px;margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:10px}.total .muted{color:#cbd5e1}.total strong{font-size:28px;white-space:nowrap}.summary{font-size:13px;margin-top:3px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}.actions button{height:51px;border-radius:13px;font-size:15px;font-weight:900;cursor:pointer}.primary{background:var(--blue);color:white;border:0}.secondary{background:white;border:1px solid #ccd4dd;color:var(--text)}
+.note{font-size:12px;color:var(--muted);line-height:1.45}.warning{background:#fff7e6;border:1px solid #f3d39a;color:#7a4b00;border-radius:12px;padding:11px;font-size:12px;margin-top:10px}
+.quote{display:none;background:white;max-width:900px;margin:auto;padding:24px;color:#17212b}.quote .head{display:flex;justify-content:space-between;gap:12px;border-bottom:2px solid var(--navy);padding-bottom:12px}.quote h1{margin:0;color:var(--navy);font-size:30px}.quote .head .meta{text-align:right;font-size:12px}.quote table{width:100%;border-collapse:collapse;margin-top:16px;font-size:14px}.quote th,.quote td{padding:10px 6px;border-bottom:1px solid #e4e7ec;text-align:left;vertical-align:top}.quote th:last-child,.quote td:last-child{text-align:right;white-space:nowrap}.quote .grand{font-size:24px;font-weight:950;text-align:right;margin-top:17px}.quote .conditions{margin-top:25px;font-size:12px;color:#555;line-height:1.5}.quote .conditions b{color:#333}.back{margin-bottom:10px}
+@media(max-width:520px){.row{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.quote{padding:14px}.quote h1{font-size:24px}.quote table{font-size:12px}}
+@media print{body{background:white}.app,.no-print{display:none!important}.quote{display:block!important;padding:25px;max-width:900px}.quote .actions{display:none}}
 </style>
 </head>
 <body>
 <div class="app">
-<header><div class="brand">CyrilAutoClean</div><div class="sub">Constructeur de devis • detailing automobile</div></header>
+<header><div class="brand">CyrilAutoClean</div><div class="sub">V2 • constructeur de devis • detailing automobile</div></header>
 <main>
 <div class="card">
-<h2>Client</h2>
+<h2>Client & véhicule</h2>
 <div class="row">
 <div class="field"><label>Nom / entreprise</label><input id="client" placeholder="Nom du client"></div>
 <div class="field"><label>Téléphone</label><input id="phone" placeholder="06…"></div>
 </div>
-<div class="field"><label>Véhicule / modèle</label><input id="model" placeholder="Ex. BMW Série 3"></div>
+<div class="row">
+<div class="field"><label>Véhicule / modèle</label><input id="model" placeholder="Ex. Kia Proceed"></div>
+<div class="field"><label>Immatriculation (optionnel)</label><input id="plate" placeholder="AA-123-AA"></div>
+</div>
 </div>
 
-<div class="card"><h2>1. Véhicule</h2>
-<div class="grid" id="vehicles"></div></div>
+<div class="card"><h2>1. Véhicule</h2><div class="hint">La taille adapte automatiquement prix et temps.</div><div class="grid" id="vehicles"></div></div>
 
 <div class="card"><h2>2. État & lieu</h2>
-<div class="field"><label>État</label><div class="grid" id="states"></div></div>
-<div class="field"><label>Prestation</label><div class="grid" id="locations"></div></div>
+<div class="field"><label>État constaté / déclaré</label><div class="grid" id="states"></div></div>
+<div class="field"><label>Lieu d'intervention</label><div class="grid" id="locations"></div></div>
 </div>
 
-<div class="card"><h2>3. Intérieur</h2><div class="grid" id="interiors"></div></div>
-<div class="card"><h2>4. Extérieur</h2><div class="grid" id="exteriors"></div></div>
-<div class="card"><h2>5. Correction peinture</h2><div class="grid" id="corrections"></div></div>
-<div class="card"><h2>6. Optiques</h2><div class="grid" id="optics"></div></div>
+<div class="card"><h2>3. Intérieur</h2><div class="hint">Une seule formule. Les options ajoutent uniquement du travail spécifique.</div><div class="grid" id="interiors"></div></div>
+<div class="card"><h2>4. Extérieur</h2><div class="hint">Une seule formule. La décontamination est intégrée au Premium.</div><div class="grid" id="exteriors"></div></div>
+<div class="card"><h2>5. Correction carrosserie</h2><div class="hint">Le temps comprend préparation, lavage, décontamination, masquage, correction et finition selon le niveau.</div><div class="grid" id="corrections"></div></div>
+<div class="card"><h2>6. Optiques — par paire</h2><div class="hint">La polymérisation est une protection dédiée : elle ne remplace pas une correction peinture.</div><div class="grid" id="optics"></div></div>
 <div class="card"><h2>7. Vitrages</h2><div class="grid" id="glass"></div></div>
-<div class="card"><h2>8. Protection</h2><div class="grid" id="protections"></div></div>
+<div class="card"><h2>8. Options complémentaires</h2><div id="options"></div></div>
 
-<div class="card"><h2>9. Options</h2><div id="options"></div></div>
+<div class="card">
+<h2>9. Ajustement commercial</h2>
+<div class="grid" id="tariffs"></div>
+<div class="hint" style="margin-top:10px">La remise est facultative et visible dans le devis. Le tarif fidélité est réservé aux clients concernés.</div>
+</div>
 
-<div class="total"><div><div class="muted" style="color:#cbd5e1">TOTAL DEVIS</div><div id="summary">Choisis tes prestations</div></div><strong id="total">0 €</strong></div>
+<div class="total"><div><div class="muted">TOTAL CLIENT</div><div id="summary" class="summary">Choisis une ou plusieurs prestations</div></div><strong id="total">0 €</strong></div>
+<div id="control" class="note"></div>
 <div class="actions">
 <button class="primary" onclick="makeQuote()">Générer le devis client</button>
 <button class="secondary" onclick="resetAll()">Nouveau devis</button>
@@ -63,63 +71,115 @@ input,select{width:100%;height:48px;border:1px solid #d0d5dd;border-radius:12px;
 </div>
 
 <section class="quote" id="quote">
-<div class="no-print back"><button class="secondary" onclick="back()">← Retour</button></div>
-<div class="head"><div><h1>CyrilAutoClean</h1><div>DEVIS DE PRESTATION — DETAILING AUTOMOBILE</div></div><div style="text-align:right"><b id="qnum"></b><br><span id="qdate"></span></div></div>
-<p><b>Client :</b> <span id="qclient"></span><br><b>Téléphone :</b> <span id="qphone"></span><br><b>Véhicule :</b> <span id="qmodel"></span> — <span id="qvehicle"></span><br><b>Lieu :</b> <span id="qlocation"></span><br><b>État :</b> <span id="qstate"></span></p>
+<div class="no-print back"><button class="secondary" onclick="back()">← Retour au constructeur</button></div>
+<div class="head"><div><h1>CyrilAutoClean</h1><div>DEVIS DE PRESTATION — DETAILING AUTOMOBILE</div></div><div class="meta"><b id="qnum"></b><br><span id="qdate"></span></div></div>
+<p><b>Client :</b> <span id="qclient"></span><br><b>Téléphone :</b> <span id="qphone"></span><br><b>Véhicule :</b> <span id="qmodel"></span> — <span id="qvehicle"></span><br><b>Immatriculation :</b> <span id="qplate"></span><br><b>Lieu :</b> <span id="qlocation"></span><br><b>État :</b> <span id="qstate"></span></p>
 <table><thead><tr><th>Prestation</th><th>Description</th><th>Montant</th></tr></thead><tbody id="qlines"></tbody></table>
 <div class="grand">TOTAL : <span id="qtotal"></span></div>
-<div class="conditions"><b>Conditions</b><br>Devis valable 30 jours. Toute prestation supplémentaire non prévue au présent devis fera l'objet d'un accord préalable. Le prix définitif est confirmé avant intervention après contrôle de l'état réel du véhicule.<br><br><b>Bon pour accord</b><br>Nom / signature : ____________________________________ &nbsp;&nbsp; Date : ____ / ____ / ______</div>
+<div class="conditions"><b>Conditions</b><br>Devis valable 30 jours. Le tarif est établi selon la catégorie du véhicule et l'état déclaré ou constaté. Toute différence importante constatée avant intervention peut entraîner un ajustement après accord du client. Toute prestation non prévue au devis fera l'objet d'un accord préalable.<br><br><b>Bon pour accord</b><br>Nom / signature : ____________________________________ &nbsp;&nbsp; Date : ____ / ____ / ______</div>
 <div class="actions no-print"><button class="primary" onclick="window.print()">Imprimer / PDF</button><button class="secondary" onclick="back()">Modifier</button></div>
 </section>
 
 <script>
-const data={
-vehicles:["Petite citadine","Citadine / compacte","Berline","Break","Coupé / Cabriolet","Monospace / Ludospace","SUV compact","SUV","Grand SUV / 4x4","Petit utilitaire","Utilitaire moyen","Grand fourgon L1/L2","Grand fourgon L3/L4","Van / camping-car","Véhicule spécifique"],
-coeff:{"Petite citadine":.9,"Citadine / compacte":1,"Berline":1.1,"Break":1.15,"Coupé / Cabriolet":1.05,"Monospace / Ludospace":1.15,"SUV compact":1.1,"SUV":1.2,"Grand SUV / 4x4":1.3,"Petit utilitaire":1.2,"Utilitaire moyen":1.35,"Grand fourgon L1/L2":1.5,"Grand fourgon L3/L4":1.75,"Van / camping-car":1.6,"Véhicule spécifique":1.35},
-states:["Normal","Sale","Très sale"],locations:["Chez AUTO CLEAN","À domicile / chez le client"],
+const D={
+vehicles:["Petite citadine","Citadine / compacte","Berline","Break","Coupé / Cabriolet","Monospace / Ludospace","SUV compact","SUV / 4x4","Grand SUV / 4x4","Petit utilitaire","Utilitaire moyen","Fourgon L1/L2","Fourgon L3/L4","Van / camping-car"],
+coef:{"Petite citadine":.9,"Citadine / compacte":1,"Berline":1.08,"Break":1.12,"Coupé / Cabriolet":1.05,"Monospace / Ludospace":1.12,"SUV compact":1.08,"SUV / 4x4":1.18,"Grand SUV / 4x4":1.30,"Petit utilitaire":1.15,"Utilitaire moyen":1.28,"Fourgon L1/L2":1.40,"Fourgon L3/L4":1.60,"Van / camping-car":1.55},
+states:["Normal","Sale","Très sale","État extrême"],
+locations:["Chez CyrilAutoClean","À domicile / chez le client"],
 interiors:["Aucun","Intérieur Essentiel","Intérieur Classique","Intérieur Premium"],
 exteriors:["Aucun","Extérieur Essentiel","Extérieur Classique","Extérieur Premium"],
 corrections:["Aucune","One-Step","Correction 2 étapes"],
-optics:["Aucune","1 optique — rénovation","Paire — rénovation","1 optique — rénovation + polymérisation","Paire — rénovation + polymérisation"],
-glass:["Aucun","Glaco — vitres"],protections:["Aucune","Carnauba FullCarX","Wax Crystal FullCarX","Hydrocote FullCarX"],
-price:{"Intérieur Essentiel":89,"Intérieur Classique":129,"Intérieur Premium":169,"Extérieur Essentiel":59,"Extérieur Classique":89,"Extérieur Premium":129,"One-Step":199,"Correction 2 étapes":329,"1 optique — rénovation":39,"Paire — rénovation":69,"1 optique — rénovation + polymérisation":59,"Paire — rénovation + polymérisation":89,"Glaco — vitres":29,"Carnauba FullCarX":19,"Wax Crystal FullCarX":22,"Hydrocote FullCarX":19,"Poils légers":10,"Poils importants":20,"Taches importantes":15,"Extraction textiles":25,"Cuir + soin":20,"Alcantara":15,"Désodorisation poussée":10,"Goudron / insectes":10,"Calcaire":15,"Décontamination renforcée":20},
-hours:{"Intérieur Essentiel":4,"Intérieur Classique":5,"Intérieur Premium":6.5,"Extérieur Essentiel":1.25,"Extérieur Classique":2,"Extérieur Premium":3,"One-Step":5,"Correction 2 étapes":8,"1 optique — rénovation":1.25,"Paire — rénovation":2,"1 optique — rénovation + polymérisation":1.5,"Paire — rénovation + polymérisation":2.5,"Glaco — vitres":.75,"Carnauba FullCarX":.5,"Wax Crystal FullCarX":.5,"Hydrocote FullCarX":.5,"Poils légers":.25,"Poils importants":.75,"Taches importantes":.5,"Extraction textiles":1,"Cuir + soin":.75,"Alcantara":.5,"Désodorisation poussée":.25,"Goudron / insectes":.5,"Calcaire":.5,"Décontamination renforcée":.75},
-options:["Poils légers","Poils importants","Taches importantes","Extraction textiles","Cuir + soin","Alcantara","Désodorisation poussée","Goudron / insectes","Calcaire","Décontamination renforcée"]
+optics:["Aucune","Rénovation optiques — paire","Rénovation + polymérisation — paire"],
+glass:["Aucun","Glaco — vitres"],
+tariffs:["Tarif normal","Tarif fidélité","Remise commerciale 5%","Remise commerciale 10%"],
+// Prix de départ pour citadine/compacte. Ils sont volontairement accessibles en lancement,
+// puis modulés par taille. Les formules ne doublonnent pas avec les options.
+price:{
+"Intérieur Essentiel":79,"Intérieur Classique":109,"Intérieur Premium":139,
+"Extérieur Essentiel":49,"Extérieur Classique":79,"Extérieur Premium":109,
+"One-Step":179,"Correction 2 étapes":299,
+"Rénovation optiques — paire":69,"Rénovation + polymérisation — paire":99,
+"Glaco — vitres":29,
+"Poils légers":10,"Poils importants":20,"Taches importantes":15,"Extraction textiles":25,
+"Cuir + soin":25,"Alcantara + soin":20,"Désodorisation poussée":15,
+"Dégoudronnage / insectes":15,"Calcaire vitrages":20,
+"Carnauba":25,"Wax":29
+},
+hours:{
+"Intérieur Essentiel":4,"Intérieur Classique":5,"Intérieur Premium":6,
+"Extérieur Essentiel":1.5,"Extérieur Classique":2.25,"Extérieur Premium":3,
+"One-Step":5.5,"Correction 2 étapes":8.5,
+"Rénovation optiques — paire":1.5,"Rénovation + polymérisation — paire":2.25,
+"Glaco — vitres":1,
+"Poils légers":.25,"Poils importants":.75,"Taches importantes":.5,"Extraction textiles":1,
+"Cuir + soin":.75,"Alcantara + soin":.5,"Désodorisation poussée":.25,
+"Dégoudronnage / insectes":.5,"Calcaire vitrages":.5,
+"Carnauba":.5,"Wax":.5
+},
+options:["Poils légers","Poils importants","Taches importantes","Extraction textiles","Cuir + soin","Alcantara + soin","Désodorisation poussée","Dégoudronnage / insectes","Calcaire vitrages","Carnauba","Wax"]
 };
-let s={vehicle:data.vehicles[1],state:"Normal",location:"Chez AUTO CLEAN",interior:"Aucun",exterior:"Aucun",correction:"Aucune",optics:"Aucune",glass:"Aucun",protection:"Aucune",options:new Set()};
+let s={vehicle:null,state:"Normal",location:"Chez CyrilAutoClean",interior:"Aucun",exterior:"Aucun",correction:"Aucune",optics:"Aucune",glass:"Aucun",tariff:"Tarif normal",options:new Set()};
 
-function renderGroup(id,arr,key){const el=document.getElementById(id);el.innerHTML="";arr.forEach(x=>{let b=document.createElement("button");b.className="choice"+(s[key]===x?" active":"");b.textContent=x;b.onclick=()=>{s[key]=x;render();};el.appendChild(b)})}
-function renderOptions(){const el=document.getElementById("options");el.innerHTML="";data.options.forEach(x=>{let d=document.createElement("div");d.className="option";d.innerHTML=`<span><b>${x}</b><br><small>${data.price[x]} €</small></span>`;let b=document.createElement("button");b.textContent=s.options.has(x)?"Ajouté ✓":"Ajouter";if(s.options.has(x))b.className="on";b.onclick=()=>{s.options.has(x)?s.options.delete(x):s.options.add(x);renderOptions();calc()};d.appendChild(b);el.appendChild(d)})}
-function render(){renderGroup("vehicles",data.vehicles,"vehicle");renderGroup("states",data.states,"state");renderGroup("locations",data.locations,"location");renderGroup("interiors",data.interiors,"interior");renderGroup("exteriors",data.exteriors,"exterior");renderGroup("corrections",data.corrections,"correction");renderGroup("optics",data.optics,"optics");renderGroup("glass",data.glass,"glass");renderGroup("protections",data.protections,"protection");renderOptions();calc()}
+function btnGroup(id,arr,key){const el=document.getElementById(id);el.innerHTML="";arr.forEach(x=>{let b=document.createElement("button");b.className="choice"+(s[key]===x?" active":"");b.innerHTML=x; b.onclick=()=>{s[key]=x;render();};el.appendChild(b)})}
+function renderOptions(){
+ const el=document.getElementById("options");el.innerHTML="";
+ const unavailable=new Set();
+ // Avoid options that are already included in the selected formulas.
+ if(s.interior==="Intérieur Premium") ["Poils légers"].forEach(x=>unavailable.add(x));
+ if(s.exterior==="Extérieur Premium") ["Dégoudronnage / insectes"].forEach(x=>unavailable.add(x));
+ D.options.forEach(x=>{
+   if(unavailable.has(x)) return;
+   let d=document.createElement("div");d.className="option";
+   d.innerHTML=`<span><b>${x}</b><br><small>+${D.price[x]} € • +${fmtH(D.hours[x])}</small></span>`;
+   let b=document.createElement("button");b.textContent=s.options.has(x)?"Ajouté ✓":"Ajouter";if(s.options.has(x))b.className="on";
+   b.onclick=()=>{s.options.has(x)?s.options.delete(x):s.options.add(x);renderOptions();calc()};d.appendChild(b);el.appendChild(d);
+ });
+}
+function render(){btnGroup("vehicles",D.vehicles,"vehicle");btnGroup("states",D.states,"state");btnGroup("locations",D.locations,"location");btnGroup("interiors",D.interiors,"interior");btnGroup("exteriors",D.exteriors,"exterior");btnGroup("corrections",D.corrections,"correction");btnGroup("optics",D.optics,"optics");btnGroup("glass",D.glass,"glass");btnGroup("tariffs",D.tariffs,"tariff");renderOptions();calc()}
+function fmtH(h){let m=Math.round(h*60);let hh=Math.floor(m/60),mm=m%60;return hh?`${hh}h${mm?String(mm).padStart(2,"0"):""}`:`${mm} min`}
+function round5(x){return Math.round(x/5)*5}
 function calc(){
- let c=data.coeff[s.vehicle],total=0,hrs=0,lines=[];
- const add=(x,desc)=>{if(!x||x==="Aucun"||x==="Aucune")return;let p=(data.price[x]||0)*c;total+=p;hrs+=(data.hours[x]||0)*c;lines.push([x,desc,p])};
- add(s.interior,"Nettoyage et finition de l’habitacle");
- if(s.correction==="Aucune") add(s.exterior,"Prélavage, lavage manuel et finition");
- else add(s.correction,"Préparation + correction + finition");
- add(s.optics,"Rénovation d’optique selon la formule");
+ let c=D.coef[s.vehicle||"Citadine / compacte"],total=0,hrs=0,lines=[];
+ const add=(x,desc)=>{if(!x||x==="Aucun"||x==="Aucune")return;let p=round5((D.price[x]||0)*c);let h=(D.hours[x]||0)*c;total+=p;hrs+=h;lines.push([x,desc,p,h])};
+ add(s.interior,"Aspiration, nettoyage et finition de l’habitacle selon la formule");
+ add(s.exterior,"Prélavage, lavage manuel et finition selon la formule");
+ add(s.correction,"Préparation complète + correction et finition");
+ add(s.optics,"Rénovation des optiques en paire selon la formule");
  add(s.glass,"Préparation des vitrages + protection hydrophobe");
- add(s.protection,"Protection de finition");
- s.options.forEach(x=>{let p=data.price[x];total+=p;hrs+=data.hours[x];lines.push([x,"Option complémentaire",p])});
- if(s.state==="Sale"){total+=10;lines.push(["Ajustement état","État déclaré : sale",10])}
- if(s.state==="Très sale"){total+=20;lines.push(["Ajustement état","État déclaré : très sale",20])}
- document.getElementById("total").textContent=Math.round(total*100)/100+" €";
- document.getElementById("summary").textContent=lines.length?`${lines.length} élément(s) • environ ${Math.round(hrs*10)/10} h`:"Choisis tes prestations";
- return {total,hrs,lines};
+ s.options.forEach(x=>add(x,"Option complémentaire"));
+ let stateExtra={Normal:0,Sale:10,"Très sale":20,"État extrême":35}[s.state];
+ if(stateExtra){total+=round5(stateExtra*c);hrs+=.25*c;lines.push(["Ajustement état",`État déclaré : ${s.state.toLowerCase()}`,round5(stateExtra*c),.25*c])}
+ let before=total, discount=0;
+ if(s.tariff==="Tarif fidélité") discount=round5(total*.10);
+ if(s.tariff==="Remise commerciale 5%") discount=round5(total*.05);
+ if(s.tariff==="Remise commerciale 10%") discount=round5(total*.10);
+ if(discount){total-=discount;lines.push([s.tariff,"Remise appliquée",-discount,0])}
+ // Déplacement: prix séparé seulement à domicile, sans gonfler les formules.
+ if(s.location==="À domicile / chez le client"){let travel=20;total+=travel;lines.push(["Déplacement","Forfait déplacement local",travel,.25])}
+ document.getElementById("total").textContent=round5(total)+" €";
+ document.getElementById("summary").textContent=lines.length?`${lines.filter(x=>x[2]>=0).length} prestation(s) • temps de travail estimé : ${fmtH(hrs)}`:"Choisis au moins une prestation";
+ let msg="";
+ if(!s.vehicle) msg="⚠️ Sélectionne une catégorie de véhicule avant de générer le devis.";
+ else if(!lines.length) msg="Sélectionne une formule intérieur, extérieur, correction, optiques ou vitrage.";
+ else msg=`Contrôle interne : ${fmtH(hrs)} de travail prévu • prix client ${round5(total)} €`;
+ document.getElementById("control").textContent=msg;
+ return {total,hrs,lines,before,discount};
 }
 function makeQuote(){
+ if(!s.vehicle){alert("Sélectionne d'abord une catégorie de véhicule.");return}
  const r=calc(); if(!r.lines.length){alert("Choisis au moins une prestation.");return}
  document.querySelector(".app").style.display="none";document.getElementById("quote").style.display="block";
- let now=new Date();document.getElementById("qnum").textContent="CAC-"+now.getFullYear()+String(now.getMonth()+1).padStart(2,"0")+String(now.getDate()).padStart(2,"0");
+ let now=new Date();document.getElementById("qnum").textContent="CAC-"+now.getFullYear()+String(now.getMonth()+1).padStart(2,"0")+String(now.getDate()).padStart(2,"0")+"-"+String(now.getHours()).padStart(2,"0")+String(now.getMinutes()).padStart(2,"0");
  document.getElementById("qdate").textContent=now.toLocaleDateString("fr-FR");
  document.getElementById("qclient").textContent=document.getElementById("client").value||"—";
  document.getElementById("qphone").textContent=document.getElementById("phone").value||"—";
  document.getElementById("qmodel").textContent=document.getElementById("model").value||"—";
- document.getElementById("qvehicle").textContent=s.vehicle;document.getElementById("qlocation").textContent=s.location;document.getElementById("qstate").textContent=s.state;document.getElementById("qtotal").textContent=Math.round(r.total*100)/100+" €";
- document.getElementById("qlines").innerHTML=r.lines.map(x=>`<tr><td><b>${x[0]}</b></td><td>${x[1]}</td><td>${x[2].toFixed(2)} €</td></tr>`).join("");
+ document.getElementById("qplate").textContent=document.getElementById("plate").value||"—";
+ document.getElementById("qvehicle").textContent=s.vehicle;document.getElementById("qlocation").textContent=s.location;document.getElementById("qstate").textContent=s.state;document.getElementById("qtotal").textContent=round5(r.total)+" €";
+ document.getElementById("qlines").innerHTML=r.lines.map(x=>`<tr><td><b>${x[0]}</b></td><td>${x[1]}<br><small>${x[3]?fmtH(x[3]):""}</small></td><td>${x[2]<0?"− ":""}${Math.abs(x[2]).toFixed(0)} €</td></tr>`).join("");
 }
 function back(){document.getElementById("quote").style.display="none";document.querySelector(".app").style.display="block"}
-function resetAll(){s={vehicle:data.vehicles[1],state:"Normal",location:"Chez AUTO CLEAN",interior:"Aucun",exterior:"Aucun",correction:"Aucune",optics:"Aucune",glass:"Aucun",protection:"Aucune",options:new Set()};document.getElementById("client").value="";document.getElementById("phone").value="";document.getElementById("model").value="";render()}
+function resetAll(){s={vehicle:null,state:"Normal",location:"Chez CyrilAutoClean",interior:"Aucun",exterior:"Aucun",correction:"Aucune",optics:"Aucune",glass:"Aucun",tariff:"Tarif normal",options:new Set()};["client","phone","model","plate"].forEach(id=>document.getElementById(id).value="");render();window.scrollTo(0,0)}
 render();
 </script>
 </body>
